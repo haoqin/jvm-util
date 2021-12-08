@@ -12,13 +12,12 @@ CREATE TABLE IF NOT EXISTS user
 
 CREATE TABLE IF NOT EXISTS transaction
 (
-  transaction_id SERIAL NOT NULL,
+  transaction_id INT NOT NULL AUTO_INCREMENT,
   sender_username VARCHAR(30) NOT NULL,
   receiver_username VARCHAR(30) NOT NULL,
   expense_id INT NOT NULL,
   message VARCHAR(256) NOT NULL,
   amount FLOAT NOT NULL,
   is_pending BOOLEAN NOT NULL,
-  PRIMARY KEY (transaction_id),
-  FOREIGN KEY (sender_username) REFERENCES user(username)
+  PRIMARY KEY (transaction_id)
 );
