@@ -1,4 +1,4 @@
-package com.liyutech.codegen
+package com.liyutech.quill
 
 import io.getquill.context.jdbc.JdbcContext
 

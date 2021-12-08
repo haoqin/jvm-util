@@ -1,4 +1,4 @@
-package com.liyutech.codegen
+package com.liyutech.quill
 
 import scala.reflect.macros.whitebox.{Context => MacroContext}
 
@@ -11,9 +11,9 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
     q"""
       import ${c.prefix}._
       val insertQuery = quote {
-        query[$t].insert(lift($entity))
+        ${c.prefix}.query[$t].insert(lift($entity))
       }
-      run(insertQuery)
+      ${c.prefix}.run(insertQuery)
       ()
     """
   }
@@ -29,8 +29,8 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
         query[$t].insert(lift($entity))
       }
       run(${c.prefix}.query[$t]).size match {
-          case 1 => run(updateQuery)
-          case _ => run(insertQuery)
+          case 1 => ${c.prefix}.run(updateQuery)
+          case _ => ${c.prefix}.run(insertQuery)
       }
       ()
     """

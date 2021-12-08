@@ -1,4 +1,4 @@
-package com.liyutech.codegen
+package com.liyutech.quill
 
 import scala.reflect.macros.whitebox.{Context => MacroContext}
 
