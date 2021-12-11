@@ -7,8 +7,6 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
 
   import c.universe._
 
-
-
   def insert[T](entity: Tree)(implicit t: WeakTypeTag[T]): Tree = {
     q"""
       import ${c.prefix}._
@@ -19,7 +17,20 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
     """
   }
 
-  def insertAll[T, R](entities: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
+  def insertAll[T](entities: Tree)(implicit t: WeakTypeTag[T]): Tree = {
+    q"""
+      import ${c.prefix}._
+      ${c.prefix}.transaction {
+       for ( entity <- $entities) yield {
+          val insertQuery = quote {
+            ${c.prefix}.query[$t].insert(lift(entity))
+          }
+          ${c.prefix}.run(insertQuery)
+       }
+      }
+    """
+  }
+  def insertAllAutoIncremented[T, R](entities: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
     q"""
       import ${c.prefix}._
       ${c.prefix}.transaction {
@@ -33,7 +44,7 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
     """
   }
 
-  def insertWithReturn[T, R](entity: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
+  def insertAutoIncremented[T, R](entity: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
     q"""
       import ${c.prefix}._
       val insertQuery = quote {

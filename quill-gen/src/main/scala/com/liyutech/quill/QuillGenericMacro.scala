@@ -14,9 +14,13 @@ trait QuillGenericMacro { this : JdbcContext[_, _] =>
   def deleteAll[T]: Unit = macro QuillDeleteMacro.delete[T]
 
   def insert[T](entity: T): Long = macro QuillInsertOrUpdateMacro.insert[T]
+
+  // Insert all models in a transactional manner, returning 0 or 1 if the insertion fails or succeeds, respectively.
+  def insertAll[T](entities: Seq[T]): Seq[Long] = macro QuillInsertOrUpdateMacro.insertAll[T]
+
   // Insert all models in a transactional manner, using the given function to extract the key, R, from the model, T.
-  def insertAll[T, R](entities: Seq[T], extractPrimaryKey: (T) => R): Seq[R] = macro QuillInsertOrUpdateMacro.insertAll[T, R]
-  def insertWithReturn[T, R](entity: T, extractPrimaryKey: (T) => R): R = macro QuillInsertOrUpdateMacro.insertWithReturn[T, R]
+  def insertAllAutoIncremented[T, R](entities: Seq[T], extractPrimaryKey: (T) => R): Seq[R] = macro QuillInsertOrUpdateMacro.insertAllAutoIncremented[T, R]
+  def insertAutoIncremented[T, R](entity: T, extractPrimaryKey: (T) => R): R = macro QuillInsertOrUpdateMacro.insertAutoIncremented[T, R]
 
   def insertOrUpdate[T](entity: T): Unit = macro QuillInsertOrUpdateMacro.insertOrUpdate[T]
   def insertOrUpdateWithFilter[T](entity: T, filter: (T) => Boolean = (_: T) => true): Unit = macro QuillInsertOrUpdateMacro.insertOrUpdateWithFilter[T]
