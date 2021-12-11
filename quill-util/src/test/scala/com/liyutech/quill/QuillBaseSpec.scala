@@ -24,8 +24,6 @@ trait QuillBaseSpec extends AsyncFlatSpec with Checkers with ScalaCheckPropertyC
 
   protected val config: Config = ConfigUtil.loadConfig("test")
   protected val dbConfig: Config = config.getConfig("db")
-  protected val quillDao = new H2JdbcContext(SnakeCase, dbConfig) with QuillGenericDao
-
-
+  protected val quillDao = QuillGenericDao.snakeCaseH2GenericDao(dbConfig)
 
 }

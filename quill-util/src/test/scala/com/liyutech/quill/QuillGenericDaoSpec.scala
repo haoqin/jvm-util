@@ -27,4 +27,15 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
     println(s"endCount: $endCount")
     assert(endCount - initCount == modelsPerIteration && primaryKeys.size == modelsPerIteration)
   }
+
+  "QuillGenericDao.insertAll()" should "insert all rows within a transactional context" in forAll(autoIncrementModels(modelsPerIteration)) { models =>
+    val initCount = quillDao.findAll[Transaction].size
+    val primaryKeys: Seq[Int] = quillDao.insertAll[Transaction, Int](models, _.transactionId)
+    println(s"initCount: $initCount")
+    println("Primary keys:")
+    println(primaryKeys.mkString(","))
+    val endCount = quillDao.findAll[Transaction].size
+    println(s"endCount: $endCount")
+    assert(endCount - initCount == modelsPerIteration && primaryKeys.size == modelsPerIteration)
+  }
 }

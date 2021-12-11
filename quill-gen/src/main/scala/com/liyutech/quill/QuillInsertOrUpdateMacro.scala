@@ -19,6 +19,20 @@ class QuillInsertOrUpdateMacro(val c: MacroContext) {
     """
   }
 
+  def insertAll[T, R](entities: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
+    q"""
+      import ${c.prefix}._
+      ${c.prefix}.transaction {
+       for ( entity <- $entities) yield {
+          val insertQuery = quote {
+            ${c.prefix}.query[$t].insert(lift(entity)).returningGenerated[$r]($extractPrimaryKey)
+          }
+          ${c.prefix}.run(insertQuery)
+       }
+      }
+    """
+  }
+
   def insertWithReturn[T, R](entity: Tree, extractPrimaryKey: Tree)(implicit t: WeakTypeTag[T], r: WeakTypeTag[R]): Tree = {
     q"""
       import ${c.prefix}._

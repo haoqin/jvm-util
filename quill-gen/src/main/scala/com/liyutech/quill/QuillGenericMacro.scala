@@ -6,14 +6,16 @@ import io.getquill.ActionReturning
 import scala.language.experimental.macros
 
 // Inspired by the examples from https://github.com/getquill/quill-example/tree/4723a5e482efb75b04371ad1d6410219b0893364
-trait QuillGenericDao { this : JdbcContext[_, _] =>
+trait QuillGenericMacro { this : JdbcContext[_, _] =>
 
-  def find[T](filter: (T) => Boolean): List[T] = macro QuillFindMacro.find[T]
-  def findAll[T]: List[T] = macro QuillFindMacro.findAll[T]
+  def find[T](filter: (T) => Boolean): Seq[T] = macro QuillFindMacro.find[T]
+  def findAll[T]: Seq[T] = macro QuillFindMacro.findAll[T]
 
   def deleteAll[T]: Unit = macro QuillDeleteMacro.delete[T]
 
   def insert[T](entity: T): Long = macro QuillInsertOrUpdateMacro.insert[T]
+  // Insert all models in a transactional manner, using the given function to extract the key, R, from the model, T.
+  def insertAll[T, R](entities: Seq[T], extractPrimaryKey: (T) => R): Seq[R] = macro QuillInsertOrUpdateMacro.insertAll[T, R]
   def insertWithReturn[T, R](entity: T, extractPrimaryKey: (T) => R): R = macro QuillInsertOrUpdateMacro.insertWithReturn[T, R]
 
   def insertOrUpdate[T](entity: T): Unit = macro QuillInsertOrUpdateMacro.insertOrUpdate[T]
