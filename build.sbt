@@ -2,7 +2,8 @@ lazy val QuillVersion = "3.10.0"
 lazy val ScalaVersion = "3.2.9"
 ThisBuild / organization := "com.liyutech"
 ThisBuild / scalaVersion := "2.13.4"
-ThisBuild / version := "0.0.3"
+ThisBuild / version := "0.0.4"
+ThisBuild / versionScheme := Some("early-semver")
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(

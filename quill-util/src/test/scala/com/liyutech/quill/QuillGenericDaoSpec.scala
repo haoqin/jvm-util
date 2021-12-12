@@ -1,5 +1,6 @@
 package com.liyutech.quill
 
+import com.liyutech.quill.JdbcContextDecorators.JdbcContextDecorator
 import com.liyutech.quill.model.{Transaction, User}
 
 class QuillGenericDaoSpec extends QuillBaseSpec {
@@ -11,10 +12,14 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
     println(s"""insertedRows: ${insertedRows.mkString(",")}""")
     val endCount = quillDao.findAll[User].size
     println(s"endCount: $endCount")
+
+    val result = quillDao.findSimpleUser()
+    println(s"result 123: $result")
+
     assert(endCount - initCount == modelsPerIteration && insertedRows.sum == modelsPerIteration)
   }
 
-  "QuillGenericDao.insertWithReturn() and find()" should "return auto-incremental keys after insertion to a table" ignore forAll(autoIncrementModels(modelsPerIteration)) { models =>
+  "QuillGenericDao.insertAutoIncremented() and find()" should "return auto-incremental keys after insertion to a table" in forAll(autoIncrementModels(modelsPerIteration)) { models =>
     val initCount = quillDao.findAll[Transaction].size
 
     println(s"initCount: $initCount")
