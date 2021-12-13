@@ -3,7 +3,6 @@ import sbt.url
 ThisBuild / organization := "com.liyutech"
 ThisBuild / organizationName := "liyutech"
 ThisBuild / scalaVersion := "2.13.4"
-ThisBuild / version := "0.0.3"
 
 ThisBuild / organizationHomepage := Some(url("https://github.com/haoqin/jvm-util"))
 
