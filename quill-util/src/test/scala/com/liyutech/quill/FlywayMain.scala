@@ -1,6 +1,5 @@
 package com.liyutech.quill
 
-import com.liyutech.common.ConfigUtil
 import io.getquill.{H2JdbcContext, SnakeCase}
 import org.flywaydb.core.Flyway
 
