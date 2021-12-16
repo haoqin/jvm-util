@@ -2,11 +2,12 @@ lazy val QuillVersion = "3.10.0"
 lazy val ScalaVersion = "3.2.9"
 ThisBuild / organization := "com.liyutech"
 ThisBuild / scalaVersion := "2.13.4"
-ThisBuild / version := "0.0.5"
+ThisBuild / version := "0.0.6"
 ThisBuild / versionScheme := Some("early-semver")
 
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
+    "org.scala-lang" % "scala-reflect" % ScalaVersion,
     "com.typesafe" % "config" % "1.4.1",
     "org.scalatest" %% "scalatest" % ScalaVersion % Test,
     "org.scalatest" %% "scalatest-flatspec" % ScalaVersion % Test,
@@ -35,12 +36,15 @@ lazy val root = (project in file("."))
   .dependsOn(common, testUtil, gen, quillUtil)
 
 lazy val common = (project in file("common")).settings(name := "common", commonSettings)
-lazy val testUtil = (project in file("test-util")).settings(name := "test-util", commonSettings).aggregate(common)
+lazy val testUtil = (project in file("test-util")).settings(name := "test-util", commonSettings)
+  .aggregate(common)
   .dependsOn(common)
 
 lazy val gen = (project in file("quill-gen"))
   .settings(name := "quill-gen", commonSettings, quillSettings)
+  .aggregate(common)
   .dependsOn(common)
+
 lazy val quillUtil = (project in file("quill-util"))
   .settings(name := "quill-util",
     libraryDependencies ++= Seq(

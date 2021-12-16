@@ -1,5 +1,6 @@
 package com.liyutech.quill
 
+import com.liyutech.common.ConfigUtil
 import com.liyutech.quill.model.User
 import com.typesafe.config.Config
 import io.getquill.{H2JdbcContext, SnakeCase}
