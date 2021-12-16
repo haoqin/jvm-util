@@ -10,7 +10,7 @@ object CleanData extends Poly1 {
   implicit val booleanCase: Case.Aux[Boolean, Boolean] = at(identity)
   implicit val intCase: Case.Aux[Int, Int] = at(identity)
   implicit val longCase: Case.Aux[Long, Long] = at(identity)
+  implicit val floatCase: Case.Aux[Float, Float] = at(identity)
+  implicit val doubleCase: Case.Aux[Double, Double] = at(identity)
   implicit val localDateCase: Case.Aux[LocalDate, LocalDate] = at(identity)
-
-
 }
