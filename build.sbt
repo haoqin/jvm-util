@@ -1,5 +1,7 @@
 lazy val QuillVersion = "3.10.0"
 lazy val ScalaVersion = "3.2.9"
+lazy val CirceVersion = "0.12.3"
+
 ThisBuild / organization := "com.liyutech"
 ThisBuild / scalaVersion := "2.13.4"
 ThisBuild / version := "0.0.6"
@@ -9,6 +11,10 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % ScalaVersion,
     "com.typesafe" % "config" % "1.4.1",
+    "io.circe" %% "circe-core" % CirceVersion,
+    "io.circe" %% "circe-shapes" % CirceVersion,
+    "io.circe" %% "circe-generic" % CirceVersion,
+    "io.circe" %% "circe-parser" % CirceVersion,
     "org.scalatest" %% "scalatest" % ScalaVersion % Test,
     "org.scalatest" %% "scalatest-flatspec" % ScalaVersion % Test,
     "org.scalacheck" %% "scalacheck" % "1.15.4" % Test,
