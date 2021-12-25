@@ -6,10 +6,17 @@ import io.getquill.ActionReturning
 import scala.language.experimental.macros
 
 // Inspired by the examples from https://github.com/getquill/quill-example/tree/4723a5e482efb75b04371ad1d6410219b0893364
-trait QuillGenericMacro { this : JdbcContext[_, _] =>
+trait QuillGenericMacro {
+  this: JdbcContext[_, _] =>
 
   def find[T](filter: (T) => Boolean): Seq[T] = macro QuillFindMacro.find[T]
+
   def findAll[T]: Seq[T] = macro QuillFindMacro.findAll[T]
+
+  def findMaxFields[T, G, M](groupBy: T => G, maxBy: T => M): Seq[(G, M)] = macro QuillFindMacro.findMaxFields[T, G, M]
+
+  def findMax[T, G, M](groupBy: T => G, maxBy: T => M)(filter: (T, G, M) => Boolean): Seq[T] = macro QuillFindMacro.findMax[T, G, M]
+
 
   def deleteAll[T]: Unit = macro QuillDeleteMacro.delete[T]
 
@@ -20,9 +27,11 @@ trait QuillGenericMacro { this : JdbcContext[_, _] =>
 
   // Insert all models in a transactional manner, using the given function to extract the key, R, from the model, T.
   def insertAllAutoIncremented[T, R](entities: Seq[T], extractPrimaryKey: (T) => R): Seq[R] = macro QuillInsertOrUpdateMacro.insertAllAutoIncremented[T, R]
+
   def insertAutoIncremented[T, R](entity: T, extractPrimaryKey: (T) => R): R = macro QuillInsertOrUpdateMacro.insertAutoIncremented[T, R]
 
   def insertOrUpdate[T](entity: T): Unit = macro QuillInsertOrUpdateMacro.insertOrUpdate[T]
+
   def insertOrUpdateWithFilter[T](entity: T, filter: (T) => Boolean = (_: T) => true): Unit = macro QuillInsertOrUpdateMacro.insertOrUpdateWithFilter[T]
 
 }

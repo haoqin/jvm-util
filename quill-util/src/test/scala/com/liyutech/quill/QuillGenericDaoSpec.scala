@@ -44,4 +44,41 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
     println(s"endCount: $endCount")
     assert(endCount - initCount == modelsPerIteration && primaryKeys.sum == modelsPerIteration)
   }
+
+  "QuillGenericDao.findMaxFields()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
+
+    import quillDao._
+
+    val maxEmailsForIds: Seq[(String, String)] = quillDao.findMaxFields[User, String, String](_.username, _.email)
+    println(maxEmailsForIds)
+    assert {
+      maxEmailsForIds.forall { case (username, maxEmail) =>
+        val allEmailsForId = quillDao.find[User](_.username == lift(username)).map(_.email)
+        maxEmail == allEmailsForId.max
+      }
+    }
+  }
+
+  "QuillGenericDao.findMax()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
+
+    val modelsWithUpdates = models.map(user => user.copy(email = user.email + "_123"))
+    quillDao.insertAll(models ++ modelsWithUpdates)
+
+    import quillDao._
+    val maxRecords = quillDao.findMax[User, String, String](_.username, _.email) {
+      (user, id, email) =>
+        user.email == email && user.username == id && user.uid == ""
+    }
+    assert {
+      maxRecords.forall { user =>
+        val maxEmail = user.email
+        val allEmailsForId = quillDao.find[User](_.username == lift(user.username)).map(_.email)
+        if (allEmailsForId.nonEmpty && allEmailsForId.length > 1) {
+          println(s"maxEmail : $maxEmail")
+          println(s"""allEmails: ${allEmailsForId.mkString(",")}""")
+        }
+        maxEmail == allEmailsForId.max
+      }
+    }
+  }
 }

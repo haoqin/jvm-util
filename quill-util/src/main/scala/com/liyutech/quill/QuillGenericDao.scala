@@ -15,4 +15,3 @@ class QuillH2GenericDao[N <: NamingStrategy](namingStrategy: N, dbConfig: Config
 object QuillGenericDao {
   def snakeCaseH2GenericDao(dbConfig: Config): QuillH2GenericDao[SnakeCase] = new QuillH2GenericDao(SnakeCase, dbConfig)
 }
-

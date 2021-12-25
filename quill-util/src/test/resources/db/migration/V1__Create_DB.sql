@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS user
   last_name VARCHAR(50) NOT NULL,
   email VARCHAR(100) NOT NULL,
   phone_number VARCHAR(15) NOT NULL,
-  profile_image VARCHAR,
-  PRIMARY KEY (username)
+  profile_image VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS transaction
@@ -18,6 +17,5 @@ CREATE TABLE IF NOT EXISTS transaction
   expense_id INT NOT NULL,
   message VARCHAR(256) NOT NULL,
   amount FLOAT NOT NULL,
-  is_pending BOOLEAN NOT NULL,
-  PRIMARY KEY (transaction_id)
+  is_pending BOOLEAN NOT NULL
 );
