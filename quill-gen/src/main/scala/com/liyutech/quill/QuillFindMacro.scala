@@ -35,7 +35,7 @@ class QuillFindMacro(val c: MacroContext) {
       }
       ${c.prefix}.run(q)
     """
-  def findMax[T, G, M](groupBy: Tree, maxBy: Tree)(filter: Tree)(implicit t: WeakTypeTag[T], g: WeakTypeTag[G], m:WeakTypeTag[M]): Tree =
+  def findGroupMax[T, G, M](groupBy: Tree, maxBy: Tree)(filter: Tree)(implicit t: WeakTypeTag[T], g: WeakTypeTag[G], m:WeakTypeTag[M]): Tree =
     q"""
       import ${c.prefix}._
       val q0 = ${c.prefix}.quote {
@@ -51,5 +51,18 @@ class QuillFindMacro(val c: MacroContext) {
         }
         ${c.prefix}.run(q)
       }
+    """
+
+  def findMax[T, I, M](id: Tree, extractId: Tree, maxBy: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I], m:WeakTypeTag[M]): Tree =
+    q"""
+      import ${c.prefix}._
+      val q = ${c.prefix}.quote {
+        ${c.prefix}.query[$t].filter { model =>
+          val modelId: $i = $extractId(model)
+          modelId == lift($id)
+        }
+      }
+      val entities: Seq[$t] = ${c.prefix}.run(q)
+      entities.maxByOption($maxBy)
     """
 }

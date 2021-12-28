@@ -45,7 +45,7 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
     assert(endCount - initCount == modelsPerIteration && primaryKeys.sum == modelsPerIteration)
   }
 
-  "QuillGenericDao.findMaxFields()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
+  "QuillGenericDao.findMaxFields()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { _ =>
 
     import quillDao._
 
@@ -59,13 +59,13 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
     }
   }
 
-  "QuillGenericDao.findMax()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
+  "QuillGenericDao.findGroupMax()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
 
     val modelsWithUpdates = models.map(user => user.copy(email = user.email + "_123"))
     quillDao.insertAll(models ++ modelsWithUpdates)
 
     import quillDao._
-    val maxRecords = quillDao.findMax[User, String, String](_.username, _.email) {
+    val maxRecords = quillDao.findGroupMax[User, String, String](_.username, _.email) {
       (user, id, email) =>
         user.email == email && user.username == id && user.uid == ""
     }
@@ -80,5 +80,15 @@ class QuillGenericDaoSpec extends QuillBaseSpec {
         maxEmail == allEmailsForId.max
       }
     }
+  }
+
+  "QuillGenericDao.findMax()" should "find all rows grouped by a given field that has the maximal value for a given field" in forAll(userModels(modelsPerIteration)) { models =>
+
+    val modelsWithUpdates = models.map(user => user.copy(email = user.email + "_123"))
+    quillDao.insertAll(models ++ modelsWithUpdates)
+
+    val maxRecord: Option[User] = quillDao.findMax[User, String, String](models.head.username, _.username, _.email)
+    println(s"maxRecord: $maxRecord")
+    assert(maxRecord.nonEmpty)
   }
 }
