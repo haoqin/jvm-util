@@ -1,8 +1,6 @@
 package com.liyutech.common
 
-import io.circe.{Json, JsonObject}
-
-case class USZipCodeInfo(stateCode: String, city: String, state: String, zipCode: Int)
+case class USZipCodeInfo(stateCode: String, city: String, state: String, zipCode: String)
 
 object USCommons {
   private val UsFirstNameFileName = "USFirstNames.txt"
@@ -28,12 +26,13 @@ object USCommons {
       val tokens: Seq[String] = line.split("\t")
       val state = tokens(3)
       val stateCode = tokens(4).replaceAll("""""""", "")
-      USZipCodeInfo(stateCode = stateCode, zipCode = tokens(1).toInt, city = tokens.apply(2), state = state)
+      USZipCodeInfo(stateCode = stateCode, zipCode = s"%05d".format(tokens(1).toInt), city = tokens.apply(2), state = state)
     }
 
   lazy val usZipcodeInfo: Map[String, Array[USZipCodeInfo]] = allUSZipcodeInfos.groupBy(_.stateCode)
 
-  import io.circe._, io.circe.parser._
+  import io.circe._
+  import io.circe.parser._
 
   // 20220101, "USC1StreetSuffix.json" was copied from https://gist.github.com/mick-io/26db11e4c7f7aee6646b07d9f858eb9c.
   lazy val usC1StreetSuffixes: Seq[String] = {

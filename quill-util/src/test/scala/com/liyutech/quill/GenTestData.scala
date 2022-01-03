@@ -45,6 +45,10 @@ object GenTestData extends ScalaCheckGenerator {
 
       println("Deleting pod table")
       quillDao.deleteAll[Pod]
+
+      quillDao.deleteAll[Expense]
+      quillDao.deleteAll[OrcaTransaction]
+      quillDao.deleteAll[UserBalance]
     }
 
 
@@ -107,57 +111,95 @@ object GenTestData extends ScalaCheckGenerator {
     val inserted: Seq[Long] = quillDao.insertAll[UserPodLookup](lookups)
     println(s"User pod look up inserted rows: ${inserted.sum}")
 
-    val userIds = users.map(_.id)
-    val podIds = pods.map(_.id)
+    val shuffledUsers = Random.shuffle(users)
+    val shuffledPods = Random.shuffle(pods)
 
+    var i = 0
     Prop.forAll(ArbitraryProduct.arbitrary[Expense]) { model =>
-      val randomSenderName = Random.shuffle(userIds).head
-      val randomPodId = Random.shuffle(podIds).head
+      val randomExpenseId = randomUUID()
+      val randomSenderName = shuffledUsers(i).id
+      val randomPodUserId = shuffledPods(i).podUsername
+      val randomAmount = Random.nextInt(1000).toDouble
+      val expenseUnit = if (randomAmount > 1.0) "dollars" else "dollar"
+      val randomMessage = s"Expense $randomAmount $expenseUnit from ${shuffledUsers(i).username}"
       val newModel: Expense = model.copy(
         senderUserId = randomSenderName,
-        id = randomPodId,
+        id = randomExpenseId,
+        podUserId = randomPodUserId,
+        amount = randomAmount,
+        message = model.message.map(_ => randomMessage),
         updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow)))
       val insertCount: Long = quillDao.insert[Expense](newModel)
       println(s"Expense inserted: $insertCount")
+      i += 1
       insertCount == 1
     }.check()
 
     val expenses: Seq[Expense] = quillDao.findAll[Expense]
-    val expenseIds = expenses.map(_.id)
+    val shuffledExpenses = Random.shuffle(expenses)
 
+    i = 0
+    // TODO: Can transaction data be inferred from expenses?
     Prop.forAll(ArbitraryProduct.arbitrary[OrcaTransaction]) { model =>
-      val shuffledUserIds = Random.shuffle(userIds)
-      val randomSenderName = shuffledUserIds.head
-      val randomReceiverName = shuffledUserIds.last
-      val randomExpenseId = Random.shuffle(expenseIds).head
+      val randomExpense = shuffledExpenses(i)
+      val randomSenderName = randomExpense.senderUserId
+      val remainingUserIndexes = (0 until shuffledUsers.size).filterNot(_ == i)
+      val receiverUserIndex = Random.shuffle(remainingUserIndexes).head
+      val randomReceiverName = shuffledUsers(receiverUserIndex).id
+      val randomExpenseId = randomExpense.id
+      val randomAmount = randomExpense.amount
+      val transactionUnit = if (randomAmount > 1.0) "dollars" else "dollar"
+
       val newModel: OrcaTransaction = model.copy(
+        id = randomUUID(),
+        podUserId = shuffledPods(i).podUsername,
         expenseId = randomExpenseId,
         senderUserId = randomSenderName,
         receiverUserId = randomReceiverName,
+        amount = randomAmount,
+        bookingId = model.bookingId.map(_ => randomUUID()),
+        message = model.message.map(_ => s"Transferred $randomAmount $transactionUnit from ${shuffledUsers(i).username} to ${shuffledUsers(receiverUserIndex).username}"),
         updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
       )
       val insertCount: Long = quillDao.insert[OrcaTransaction](newModel)
       println(s"Transaction inserted: $insertCount")
+      i += 1
       insertCount == 1
     }.check()
 
     val orcaTransactions: Seq[OrcaTransaction] = quillDao.findAll[OrcaTransaction]
-    val orcaTransactionIds: Seq[String] = orcaTransactions.map(_.id)
+    i = 0
 
-    Prop.forAll(ArbitraryProduct.arbitrary[UserBalance]) { model =>
-      val randomUserName = Random.shuffle(userIds).head
-      val randomTransactionId = Random.shuffle(orcaTransactionIds).head
-      val newModel: UserBalance = model.copy(
-        userId = randomUserName,
-        transactionId = randomTransactionId,
-        balance = Math.abs(model.balance),
-        updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
+    // Make a deposit to the UserBalance for all receivers of orca transactions.
+    // Shall we also deduce the same amount from the corresponding senders?
+    orcaTransactions.foreach { orcaTransaction =>
+      val newModel = UserBalance(
+        id = randomUUID(),
+        userId = orcaTransaction.receiverUserId,
+        transactionId = orcaTransaction.id,
+        balance = orcaTransaction.amount,
+        updatedAt = orcaTransaction.updatedAt
       )
-
       val insertCount: Long = quillDao.insert[UserBalance](newModel)
       println(s"User balance inserted: $insertCount")
-      insertCount == 1
-    }.check()
+    }
+
+    //    Prop.forAll(ArbitraryProduct.arbitrary[UserBalance]) { model =>
+    //      val randomUserName = shuffledUsers(i).id
+    //      val randomTransactionId = orcaTransactions(i).id
+    //      val newModel: UserBalance = model.copy(
+    //        id = randomUUID(),
+    //        userId = randomUserName,
+    //        transactionId = randomTransactionId,
+    //        balance = Math.abs(model.balance),
+    //        updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
+    //      )
+    //
+    //      val insertCount: Long = quillDao.insert[UserBalance](newModel)
+    //      println(s"User balance inserted: $insertCount")
+    //      i += 1
+    //      insertCount == 1
+    //    }.check()
   }
 
 }
