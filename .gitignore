@@ -1,3 +1,4 @@
+*-test-postgres.conf
 **/*.diff
 *.class
 .idea

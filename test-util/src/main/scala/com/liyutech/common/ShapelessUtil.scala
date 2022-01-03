@@ -1,7 +1,7 @@
-package com.liyutech.testlib
+package com.liyutech.common
 
-import shapeless.{Generic, HList, Poly}
 import shapeless.ops.hlist
+import shapeless.{Generic, HList, Poly}
 
 trait ProductMapper[A, B, P] {
   def apply(a: A): B

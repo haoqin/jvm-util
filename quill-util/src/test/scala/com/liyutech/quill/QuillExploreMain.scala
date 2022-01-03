@@ -1,7 +1,7 @@
 package com.liyutech.quill
 
 import com.liyutech.common.ConfigUtil
-import com.liyutech.quill.model.User
+import com.liyutech.quill.model.OrcaUser
 import com.typesafe.config.Config
 import io.getquill.{H2JdbcContext, SnakeCase}
 
@@ -19,7 +19,7 @@ object QuillExploreMain {
   def main(args: Array[String]): Unit = {
     import h2Dao._
     val q = quote {
-      query[User]
+      query[OrcaUser]
     }
     println(run(q))
   }

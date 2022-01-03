@@ -5,7 +5,15 @@ import java.util.Date
 
 object TimeUtil {
   def toLocalDate(date: Date): LocalDate = {
+    toLocalDateTime(date).toLocalDate()
+  }
+
+  def toLocalDateTime(date: Date): LocalDateTime = {
     val instant = Instant.ofEpochMilli(date.getTime)
-    LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate()
+    LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+  }
+
+  def toLocalDateTime(date: LocalDate): LocalDateTime = {
+    date.atStartOfDay()
   }
 }
