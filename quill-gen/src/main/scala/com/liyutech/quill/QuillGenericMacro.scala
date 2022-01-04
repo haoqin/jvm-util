@@ -12,6 +12,8 @@ trait QuillGenericMacro {
 
   def find[T](filter: (T) => Boolean): Seq[T] = macro QuillFindMacro.find[T]
 
+  def findBy[T, I](id: I, extractId: T => I): Seq[T] = macro QuillFindMacro.findBy[T, I]
+
   def findAll[T]: Seq[T] = macro QuillFindMacro.findAll[T]
 
   def findMaxFields[T, G, M](groupBy: T => G, maxBy: T => M): Seq[(G, M)] = macro QuillFindMacro.findMaxFields[T, G, M]
@@ -19,8 +21,11 @@ trait QuillGenericMacro {
   // Find max for each group.
   def findGroupMax[T, G, M](groupBy: T => G, maxBy: T => M)(filter: (T, G, M) => Boolean): Seq[T] = macro QuillFindMacro.findGroupMax[T, G, M]
 
-  // Find by id and max:
-  def findMax[T, I, M](id: I, extractId: T => I, maxBy: T => M): Option[T] = macro QuillFindMacro.findMax[T, I, M]
+  // Find max by id and max:
+  def findMax[T, I, M](id: I, extractId: T => I, maxBy: T => M): T = macro QuillFindMacro.findMax[T, I, M]
+
+  // Find min by id and max:
+  def findMin[T, I, M](id: I, extractId: T => I, minBy: T => M): T = macro QuillFindMacro.findMin[T, I, M]
 
   def deleteAll[T]: Unit = macro QuillDeleteMacro.delete[T]
 

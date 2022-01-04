@@ -24,6 +24,45 @@ class QuillFindMacro(val c: MacroContext) {
       ${c.prefix}.run(q)
     """
 
+  def findBy[T, I](id: Tree, extractId: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I]): Tree =
+    q"""
+      import ${c.prefix}._
+      val q = ${c.prefix}.quote {
+        ${c.prefix}.query[$t].filter { model =>
+          val modelId: $i = $extractId(model)
+          modelId == lift($id)
+        }
+      }
+      val entities: Seq[$t] = ${c.prefix}.run(q)
+      entities
+    """
+
+  def findMax[T, I, M](id: Tree, extractId: Tree, maxBy: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I], m:WeakTypeTag[M]): Tree =
+    q"""
+      import ${c.prefix}._
+      val q = ${c.prefix}.quote {
+        ${c.prefix}.query[$t].filter { model =>
+          val modelId: $i = $extractId(model)
+          modelId == lift($id)
+        }
+      }
+      val entities: Seq[$t] = ${c.prefix}.run(q)
+      entities.maxBy($maxBy)
+    """
+
+  def findMin[T, I, M](id: Tree, extractId: Tree, minBy: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I], m:WeakTypeTag[M]): Tree =
+    q"""
+      import ${c.prefix}._
+      val q = ${c.prefix}.quote {
+        ${c.prefix}.query[$t].filter { model =>
+          val modelId: $i = $extractId(model)
+          modelId == lift($id)
+        }
+      }
+      val entities: Seq[$t] = ${c.prefix}.run(q)
+      entities.minBy($minBy)
+    """
+
   def findMaxFields[T, G, M](groupBy: Tree, maxBy: Tree)(implicit t: WeakTypeTag[T], g: WeakTypeTag[G], m:WeakTypeTag[M]): Tree =
     q"""
       import ${c.prefix}._
@@ -51,18 +90,5 @@ class QuillFindMacro(val c: MacroContext) {
         }
         ${c.prefix}.run(q)
       }
-    """
-
-  def findMax[T, I, M](id: Tree, extractId: Tree, maxBy: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I], m:WeakTypeTag[M]): Tree =
-    q"""
-      import ${c.prefix}._
-      val q = ${c.prefix}.quote {
-        ${c.prefix}.query[$t].filter { model =>
-          val modelId: $i = $extractId(model)
-          modelId == lift($id)
-        }
-      }
-      val entities: Seq[$t] = ${c.prefix}.run(q)
-      entities.maxByOption($maxBy)
     """
 }
