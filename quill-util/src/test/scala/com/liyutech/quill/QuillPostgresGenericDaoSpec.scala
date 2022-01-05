@@ -4,6 +4,8 @@ import com.liyutech.quill.model.OrcaUser
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatestplus.scalacheck.{Checkers, ScalaCheckPropertyChecks}
 
+import java.time.LocalDateTime
+
 class QuillPostgresGenericDaoSpec extends AsyncFlatSpec with Checkers with ScalaCheckPropertyChecks {
   val quillDao = QuillGenericDao.defaultPostgresGenericDao("test-postgres")
 
@@ -21,7 +23,14 @@ class QuillPostgresGenericDaoSpec extends AsyncFlatSpec with Checkers with Scala
     //    quillDao.deleteAll[OrcaUser]
     val allUsers = quillDao.findAll[OrcaUser]
     allUsers.foreach(println)
-    assert(true)
+
+    val groupMax: Seq[OrcaUser] = quillDao.findGroupMax[OrcaUser, String, LocalDateTime](_.username, _.updatedAt) { (user, id, updatedAt) =>
+      user.updatedAt == updatedAt && user.username == id
+    }
+
+    groupMax.foreach(println)
+
+    assert(groupMax.size % 100 == 0)
   }
 
 }
