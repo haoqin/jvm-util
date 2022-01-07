@@ -22,4 +22,13 @@ object QuillGenericDao {
     val dbConfig: Config = config.getConfig(dbPath)
     defaultPostgresGenericDao(dbConfig)
   }
+
+  //  implicit class QuillPostgresGenericDaoDecorator(dao: QuillPostgresGenericDao) {
+  //    def findGroup2Max[T: dao.SchemaMeta](tableName: String, maxBy: String, groupBy: String, moreGroupBy: String): Seq[T] = {
+  //      import dao._
+  //      dao.run(quote {
+  //        infix"""SELECT m.* FROM (SELECT *,ROW_NUMBER() OVER(PARTITION BY #$groupBy, #$moreGroupBy ORDER BY #$maxBy DESC) rowNumber FROM #$tableName) m WHERE m.rowNumber = 1""".as[Query[T]]
+  //      })
+  //    }
+  //  }
 }

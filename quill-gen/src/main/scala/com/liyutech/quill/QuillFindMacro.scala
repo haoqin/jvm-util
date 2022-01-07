@@ -84,11 +84,18 @@ class QuillFindMacro(val c: MacroContext) {
         }
       }
       val entities: Seq[($g, $m)] = ${c.prefix}.run(q0)
-      entities.flatMap { case(gv, sv) =>
+      entities.flatMap { case(groupById, m) =>
         val q = ${c.prefix}.quote {
-          ${c.prefix}.query[$t].filter { m => $filter(m, lift(gv), lift(sv)) }
+          ${c.prefix}.query[$t].filter { model => $filter(model, lift(groupById), lift(m)) }
         }
         ${c.prefix}.run(q)
       }
     """
+
+
+//  def findGroup2Max[T](tableName: Tree, maxBy: Tree, groupByField0: Tree, groupByField1: Tree)(implicit t: WeakTypeTag[T]): Tree =
+//    q"""
+//      import ${c.prefix}._
+//      ${c.prefix}.run(quote(infix"SELECT * from #$tableName".as[Query[$t]]))
+//    """
 }

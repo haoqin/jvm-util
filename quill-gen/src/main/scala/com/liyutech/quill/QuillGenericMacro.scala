@@ -18,8 +18,11 @@ trait QuillGenericMacro {
 
   def findMaxFields[T, G, M](groupBy: T => G, maxBy: T => M): Seq[(G, M)] = macro QuillFindMacro.findMaxFields[T, G, M]
 
+
   // Find max for each group.
   def findGroupMax[T, G, M](groupBy: T => G, maxBy: T => M)(filter: (T, G, M) => Boolean): Seq[T] = macro QuillFindMacro.findGroupMax[T, G, M]
+
+//  def findGroup2Max[T](tableName: String, maxBy: String, groupByField0: String, groupByField1: String): Seq[T] = macro QuillFindMacro.findGroup2Max[T]
 
   // Find max by id and max:
   def findMax[T, I, M](id: I, extractId: T => I, maxBy: T => M): T = macro QuillFindMacro.findMax[T, I, M]
