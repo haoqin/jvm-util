@@ -47,7 +47,7 @@ class QuillFindMacro(val c: MacroContext) {
         }
       }
       val entities: Seq[$t] = ${c.prefix}.run(q)
-      entities.maxBy($maxBy)
+      entities.maxByOption($maxBy)
     """
 
   def findMin[T, I, M](id: Tree, extractId: Tree, minBy: Tree)(implicit t: WeakTypeTag[T], i: WeakTypeTag[I], m:WeakTypeTag[M]): Tree =
@@ -60,7 +60,7 @@ class QuillFindMacro(val c: MacroContext) {
         }
       }
       val entities: Seq[$t] = ${c.prefix}.run(q)
-      entities.minBy($minBy)
+      entities.minByOption($minBy)
     """
 
   def findMaxFields[T, G, M](groupBy: Tree, maxBy: Tree)(implicit t: WeakTypeTag[T], g: WeakTypeTag[G], m:WeakTypeTag[M]): Tree =

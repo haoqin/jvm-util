@@ -10,16 +10,11 @@ import org.scalacheck.Prop
 import java.util.{Base64, Date}
 import scala.util.Random
 
-object GenTestData extends ScalaCheckGenerator {
+object GenTestData extends ScalaCheckGenerator with TestDataGen {
 
   implicit val strTransform: String => String = _.take(3)
   private val quillDao = QuillGenericDao.defaultPostgresGenericDao("test-postgres")
 
-  private val DefaultCitizenship = "US"
-  private val allUSZipcodeInfo: Array[USZipCodeInfo] = USCommons.allUSZipcodeInfos
-  private val allUSZipcodeInfoCount = allUSZipcodeInfo.length
-  private val earliestBirthdayFromNow = 365 * 100
-  private val earliestUpdatedAtTimeFromNow = 365
 
   def main(args: Array[String]): Unit = {
     val dropExistingRecordsFirst = args.headOption.fold(true)(_ == "deleteFirst")
@@ -53,27 +48,7 @@ object GenTestData extends ScalaCheckGenerator {
 
 
     Prop.forAll(ArbitraryProduct.arbitrary[OrcaUser]) { user =>
-      val randomFirstName = randomUSFirstName().toLowerCase
-      val randomLastName = randomUSLastName().toLowerCase
-      val randomUserName = s"$randomFirstName.$randomLastName"
-      val usZipcodeInfoIndex = Random.nextInt(allUSZipcodeInfoCount)
-      val nextRandomUSZipCode = allUSZipcodeInfo(usZipcodeInfoIndex)
-      val newModel: OrcaUser = user.copy(
-        id = randomUUID(),
-        uid = randomUUID(),
-        personId = Option(randomUUID()),
-        profileImage = new String(Base64.getEncoder.encode(randomAlphaNumericStr(20000).getBytes)),
-        firstName = randomFirstName,
-        lastName = randomLastName,
-        username = randomUserName,
-        emailAddress = randomEmail(randomUserName),
-        streetLine_1 = Option(randomUSAddress),
-        streetLine_2 = None,
-        dateOfBirth = CommonUtil.minusDays(new Date(), Random.nextLong(earliestBirthdayFromNow)),
-        citizenship = DefaultCitizenship, postalCode = Option(nextRandomUSZipCode.zipCode.toString),
-        state = Option(nextRandomUSZipCode.stateCode), phoneNumber = randomUSPhoneNumber(),
-        city = Option(nextRandomUSZipCode.city),
-        updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow)))
+      val newModel: OrcaUser = toReadableUser(user)
       println(newModel)
       val insertCount: Long = quillDao.insert[OrcaUser](newModel)
       println(s"User inserted: $insertCount")
@@ -83,14 +58,7 @@ object GenTestData extends ScalaCheckGenerator {
     Prop.forAll(ArbitraryProduct.arbitrary[Pod]) { model =>
       val podDescription: String = randomTwoUpperCamelNouns()
       val podUserName: String = podDescription.toLowerCase.replaceAll(" ", ".")
-      val newModel: Pod = model.copy(
-        id = randomUUID(),
-        podUsername = podUserName,
-        podName = Option(podUserName),
-        podDescription = Option(podDescription),
-        emoji = model.emoji.map(_ => randomEmoji),
-        updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
-      )
+      val newModel: Pod = toReadablePod(model)
       val insertCount: Long = quillDao.insert[Pod](newModel)
       println(s"Pod inserted: $insertCount")
       insertCount == 1
@@ -136,7 +104,7 @@ object GenTestData extends ScalaCheckGenerator {
     }.check()
 
     val expenses: Seq[Expense] = quillDao.findAll[Expense]
-    val shuffledExpenses = Random.shuffle(expenses)
+    val shuffledExpenses: Seq[Expense] = Random.shuffle(expenses)
 
     i = 0
     // TODO: Can transaction data be inferred from expenses?
