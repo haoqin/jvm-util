@@ -1,29 +1,48 @@
 package com.liyutech.common
 
-import io.circe.{Encoder, Json, JsonObject}
-import shapeless.labelled.FieldType
 import shapeless.ops.hlist
-import shapeless.{::, Generic, HList, HNil, Lazy, Poly, Witness}
+import shapeless.{Generic, HList, LabelledGeneric, Poly}
 
 trait ProductMapper[A, B, P] {
   def apply(a: A): B
 }
 
+
+
 object ShapelessUtil {
-  implicit val hnilEncoder: Encoder[HNil] = Encoder.AsObject.instance[HNil](_ => JsonObject.empty)
-
-  implicit def hlistEncoder[K <: Symbol, H, T <: HList](
-                                                         implicit witness: Witness.Aux[K],
-                                                         hEncoder: Lazy[Encoder[H]],
-                                                         tEncoder: Encoder.AsObject[T]): Encoder.AsObject[FieldType[K, H] :: T] = {
-    Encoder.AsObject.instance[FieldType[K, H] :: T] { instance =>
-
-      val fieldName: String = witness.value.name
-      val hValue: Json = hEncoder.value.apply(instance.head)
-      val tValue: JsonObject = tEncoder.encodeObject(instance.tail)
-      JsonObject(fieldName -> hValue).deepMerge(tValue)
-    }
+  trait ModelTransformer[A, B] {
+    def projectTo(input: A): B
   }
+
+  // This implicit syntax extends the case class A with extension methods defined in ModelTransformer.
+  implicit class ModelTransformerOps[A](a: A) {
+    def projectTo[B](implicit migration: ModelTransformer[A, B]): B =
+      migration.projectTo(a)
+  }
+
+  // Copied from "The Type Astronaut's Guide to Shapeless".
+  implicit def genericMigration[A, B, ARepr <: HList, BRepr <: HList](implicit
+                                                                       aGen: LabelledGeneric.Aux[A, ARepr],
+                                                                       bGen: LabelledGeneric.Aux[B, BRepr],
+                                                                       inter: hlist.Intersection.Aux[ARepr, BRepr, BRepr]
+                                                                     ): ModelTransformer[A, B] = new ModelTransformer[A, B] {
+    def projectTo(a: A): B = bGen.from(inter.apply(aGen.to(a)))
+  }
+
+  //  implicit val hnilEncoder: Encoder[HNil] = Encoder.AsObject.instance[HNil](_ => JsonObject.empty)
+  //
+  //  implicit def hlistEncoder[K <: Symbol, H, T <: HList](
+  //                                                         implicit witness: Witness.Aux[K],
+  //                                                         hEncoder: Lazy[Encoder[H]],
+  //                                                         tEncoder: Encoder.AsObject[T]): Encoder.AsObject[FieldType[K, H] :: T] = {
+  //    Encoder.AsObject.instance[FieldType[K, H] :: T] { instance =>
+  //
+  //      val fieldName: String = witness.value.name
+  //      val hValue: Json = hEncoder.value.apply(instance.head)
+  //      val tValue: JsonObject = tEncoder.encodeObject(instance.tail)
+  //      JsonObject(fieldName -> hValue).deepMerge(tValue)
+  //    }
+  //  }
 
   import shapeless.Poly1
 
@@ -50,6 +69,7 @@ object ShapelessUtil {
     }
 
     def map: Builder[A] = new Builder[A]
+
     def mapTo[B]: Builder[B] = new Builder[B]
   }
 

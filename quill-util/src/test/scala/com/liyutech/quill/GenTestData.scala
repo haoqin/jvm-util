@@ -1,13 +1,13 @@
 package com.liyutech.quill
 
+import com.liyutech.common.CommonUtil
 import com.liyutech.common.data.ScalaCheckGenerator
-import com.liyutech.common.data.ScalaCheckGenerator.{randomAlphaNumericStr, randomEmail, randomEmoji, randomTwoUpperCamelNouns, randomUSAddress, randomUSFirstName, randomUSLastName, randomUSPhoneNumber, randomUUID}
+import com.liyutech.common.data.ScalaCheckGenerator.{randomTwoUpperCamelNouns, randomUUID}
 import com.liyutech.common.data.codegen.ArbitraryProduct
-import com.liyutech.common.{CommonUtil, USCommons, USZipCodeInfo}
 import com.liyutech.quill.model._
 import org.scalacheck.Prop
 
-import java.util.{Base64, Date}
+import java.util.Date
 import scala.util.Random
 
 object GenTestData extends ScalaCheckGenerator with TestDataGen {

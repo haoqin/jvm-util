@@ -1,0 +1,3 @@
+package com.liyutech.common.model
+
+case class OrcaUser(id: String, uid: String, username: String, profileImage: String, firstName: String, lastName: String, dateOfBirth: java.time.LocalDateTime, emailAddress: String, phoneNumber: String, citizenship: String, personId: Option[String], streetLine_1: Option[String], streetLine_2: Option[String], city: Option[String], state: Option[String], postalCode: Option[String], updatedAt: java.time.LocalDateTime)
