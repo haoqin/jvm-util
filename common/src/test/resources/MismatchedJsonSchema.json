@@ -1,0 +1,24 @@
+{
+  "emojiRenamed": "🐳",
+  "existing": [
+    {
+      "emoji": "🏡",
+      "id2": "5c3b9b40-c297-44b4-838c-d600c0209749",
+      "isDm": 1,
+      "isPublic": false,
+      "podDescription": "Rent, utilities, etc",
+      "podName": "Roommates",
+      "updatedAt": "2022-01-10T12:13:17.348"
+    }
+  ],
+  "id": "e4e69faa-c08d-45c8-923e-c8214f90a7fb",
+  "isDm": false,
+  "members": [
+    "f77f9184-6581-47c3-bbd8-c854708160cc",
+    "b649803f-6825-4b4c-b51b-9ceb2841629b",
+    "fbaa0f57-d83e-4661-841f-3dcba0440ef3"
+  ],
+  "podDescription": "Asdrgsdfg",
+  "podName": "Dryer",
+  "updatedAt": "2022-01-10T14:14:57.316"
+}
