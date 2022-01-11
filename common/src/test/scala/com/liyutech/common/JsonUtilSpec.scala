@@ -45,7 +45,7 @@ class JsonUtilSpec extends AsyncFlatSpec {
       mismatched <- mismatchedSchema
     } yield schema.schemaMismatches(mismatched)
 
-    println(errorPath)
+    println(s"errorPath count: ${errorPath.map(_.size)}\n$errorPath")
 
     // The number of errors compare two schemas should always be an even number because the errors are reciprocal.
     val assertEvenErrorSizes: Set[String] => Boolean = errors => errors.nonEmpty && errors.size % 2 == 0
