@@ -47,7 +47,7 @@ object CommonUtil {
     optFile.map(readAsString)
   }
 
-  def readFileAsString(fileName: String, prefixPath: String = SrcResourceDir): String = {
+  def readFileAsString(fileName: String, prefixPath: String = "."): String = {
     readFileAsOptionString(fileName, prefixPath).fold("")(identity)
   }
 
