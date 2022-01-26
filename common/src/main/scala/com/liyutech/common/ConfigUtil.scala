@@ -31,10 +31,13 @@ object ConfigUtil {
               val combinedObj: Config = firstValue.asInstanceOf[ConfigObject].toConfig
                 .combine(secondValue.asInstanceOf[ConfigObject].toConfig)
               combined.put(key, combinedObj.asInstanceOf[ConfigObject])
-            case (ConfigValueType.LIST, ConfigValueType.LIST) =>
-              val aList = firstValue.asInstanceOf[ConfigList]
-              aList.addAll(secondValue.asInstanceOf[ConfigList])
-              combined.put(key, aList)
+            // TODO: Handle list concatenation later. ConfigList.addAll(ConfigList) does not work.
+            //              Exception in thread "main" java.lang.UnsupportedOperationException: ConfigList is immutable, you can't call List.'addAll'
+            //          at com.typesafe.config.impl.SimpleConfigList.weAreImmutable(SimpleConfigList.java:387)
+            //            case (ConfigValueType.LIST, ConfigValueType.LIST) =>
+            //              val aList = firstValue.asInstanceOf[ConfigList]
+            //              aList.addAll(secondValue.asInstanceOf[ConfigList])
+            //              combined.put(key, aList)
             case (_, _) => combined.put(key, firstValue)
           }
         }
