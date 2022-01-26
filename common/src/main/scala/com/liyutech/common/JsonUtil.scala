@@ -57,7 +57,7 @@ object JsonUtil {
     // schema comparison against LocalDateTime against string will reveal no difference.
     def schemaMismatches(anotherJson: Json): Set[String] = {
       if (json.isBoolean) {
-        if (anotherJson.isBoolean) {
+        if (anotherJson.isBoolean || anotherJson.isNull) {
           Set.empty[String]
         }
         else {
@@ -65,7 +65,7 @@ object JsonUtil {
         }
       }
       else if (json.isNumber) {
-        if (anotherJson.isNumber) {
+        if (anotherJson.isNumber || anotherJson.isNull) {
           Set.empty[String]
         }
         else {
@@ -73,7 +73,7 @@ object JsonUtil {
         }
       }
       else if (json.isString) {
-        if (anotherJson.isString) {
+        if (anotherJson.isString || anotherJson.isNull) {
           Set.empty[String]
         }
         else {
@@ -81,12 +81,12 @@ object JsonUtil {
         }
       }
       else if (json.isNull) {
-        if (anotherJson.isNull) {
-          Set.empty[String]
-        }
-        else {
-          Set(s"A null type does not match ${jsonType(anotherJson)}")
-        }
+        //        if (anotherJson.isNull) {
+        Set.empty[String]
+        //        }
+        //        else {
+        //          Set(s"A null type does not match ${jsonType(anotherJson)}")
+        //        }
       }
       else if (json.isObject) {
         if (anotherJson.isObject) {
@@ -102,14 +102,19 @@ object JsonUtil {
             newKeys.map(key => s"Unexpected new key: $key")
         }
         else {
-          Set(s"Cannot compare a json object to ${jsonType(anotherJson)}.")
+          if (anotherJson.isNull) {
+            Set.empty[String]
+          }
+          else {
+            Set(s"Cannot compare a json object to ${jsonType(anotherJson)}.")
+          }
         }
       }
       else if (json.isArray) {
         if (anotherJson.isArray) {
-          val aMismatchB = for { a <- json.asArray.get
-            b <- anotherJson.asArray.get
-          } yield a.schemaMismatches(b)
+          val aMismatchB = for {a <- json.asArray.get
+                                b <- anotherJson.asArray.get
+                                } yield a.schemaMismatches(b)
 
           val bMismatchA = for {
             b <- anotherJson.asArray.get
@@ -118,7 +123,12 @@ object JsonUtil {
           aMismatchB.flatten.toSet ++ bMismatchA.flatten.toSet
         }
         else {
-          Set(s"Cannot compare a json object to ${jsonType(anotherJson)}.")
+          if (anotherJson.isNull) {
+            Set.empty[String]
+          }
+          else {
+            Set(s"Cannot compare a json arrat to ${jsonType(anotherJson)}.")
+          }
         }
       }
       else {

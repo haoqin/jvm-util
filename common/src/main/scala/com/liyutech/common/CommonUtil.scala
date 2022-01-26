@@ -15,7 +15,7 @@ object CommonUtil {
   val TestResourceDir = s"$srcDir/test/resources"
 
   def firstLetterUppercase(str: String): String = {
-    Option(str).map(s => s"${s.head.toUpper}${s.tail}" ).fold(str)(identity)
+    Option(str).map(s => s"${s.head.toUpper}${s.tail}").fold(str)(identity)
   }
 
   def toOrdinal(i: Int): String = {
@@ -35,12 +35,20 @@ object CommonUtil {
 
   def fullFilePath(path: String, prefixPath: String = SrcResourceDir): String = s"$prefixPath/$path"
 
-  def readFileAsString(path: String, prefixPath: String = SrcResourceDir): String = {
-    val fullPath = fullFilePath(path, prefixPath)
-    val f = scala.io.Source.fromFile(fullPath)
+  def readAsString(file: File): String = {
+    val f = scala.io.Source.fromFile(file)
     val output = f.mkString
     f.close()
     output
+  }
+
+  def readFileAsOptionString(fileName: String, prefixPath: String = "."): Option[String] = {
+    val optFile: Option[File] = findFirstMatchedRegularFile(prefixPath, fileName)
+    optFile.map(readAsString)
+  }
+
+  def readFileAsString(fileName: String, prefixPath: String = SrcResourceDir): String = {
+    readFileAsOptionString(fileName, prefixPath).fold("")(identity)
   }
 
   def findFirstMatchedRegularFile(rootPath: String, targetFile: String): Option[File] = {

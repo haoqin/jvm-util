@@ -9,7 +9,7 @@ object USCommons {
     file.getParentFile.getAbsolutePath
   }
   //  val commonDir: String = CommonUtil.findFirstMatchDirectory(s"common/src/main/resources").fold("")(_.getAbsolutePath)
-  val curriedReadFile = CommonUtil.readFileAsString(_: String, prefixPath = commonDir)
+  private val curriedReadFile = CommonUtil.readFileAsString(_: String, prefixPath = commonDir)
   lazy val usFirstNames: Seq[String] = curriedReadFile(UsFirstNameFileName).split(NewLineDelimiter)
   lazy val usLastNames: Seq[String] = curriedReadFile("USLastNames.txt").split(NewLineDelimiter)
   // a map from two-letter state codes to the corresponding state names.
