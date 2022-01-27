@@ -5,6 +5,7 @@ import java.nio.file.{FileSystems, Files}
 import java.text.SimpleDateFormat
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Date
+import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 object CommonUtil {
@@ -43,9 +44,10 @@ object CommonUtil {
     optFile.map(readAsString)
   }
 
-  def readFileAsString(fileName: String, prefixPath: String = ""): String = {
-    readFileAsOptionString(fileName, prefixPath).fold("")(identity)
+  def readFileAsString(fullyQualifiedFileName: String): String = {
+    readAsString(new File(fullyQualifiedFileName))
   }
+
 
   def findFirstMatchedRegularFile(rootPath: String, targetFile: String): Option[File] = {
     Option(rootPath) flatMap { root =>
