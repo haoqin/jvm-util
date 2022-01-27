@@ -48,6 +48,12 @@ object CommonUtil {
     readAsString(new File(fullyQualifiedFileName))
   }
 
+  def readFromClassPath(resourceName: String): String = {
+    val resource = getClass.getResource(s"/$resourceName")
+    println(s"readFromClassPath $resourceName, resource $resource")
+    Source.fromURL(resource).mkString
+
+  }
 
   def findFirstMatchedRegularFile(rootPath: String, targetFile: String): Option[File] = {
     Option(rootPath) flatMap { root =>

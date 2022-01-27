@@ -36,4 +36,10 @@ class CommonUtilSpec extends AsyncFlatSpec {
       optFileContent.fold(false)(_.nonEmpty)
     }
   }
+
+  "CommonUtil" should "readFromClassPath " in {
+    val fileName = "Emoji.txt"
+    val fileContent: String = CommonUtil.readFromClassPath(fileName)
+    assert(fileContent.nonEmpty)
+  }
 }

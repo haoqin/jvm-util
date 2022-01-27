@@ -17,9 +17,11 @@ object ConfigUtil {
   }
 
   def loadConfig(secretConfigFilePath: String, applicationConfPath: String): Config = {
+    val resourceContent = CommonUtil.readFromClassPath(applicationConfPath)
+    println(s"resourceContent resourceContent size ${resourceContent.size} ")
     Path(secretConfigFilePath).createFile().appendAll(
       "\n",
-      CommonUtil.readFileAsOptionString(applicationConfPath, ".").fold(".")(identity)
+      resourceContent
     )
     val conf: Config = ConfigFactory.parseFileAnySyntax(new File(secretConfigFilePath))
     Path(secretConfigFilePath).delete()
