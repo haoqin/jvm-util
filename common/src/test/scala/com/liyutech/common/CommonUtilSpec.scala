@@ -31,7 +31,7 @@ class CommonUtilSpec extends AsyncFlatSpec {
 
   "CommonUtil" should "readAsOptionString " in {
     val fileName = "Emoji.txt"
-    val optFileContent: Option[String] = CommonUtil.readFileAsOptionString(fileName = fileName)
+    val optFileContent: Option[String] = CommonUtil.readFileAsOptionString(fileName = fileName, ".")
     assert {
       optFileContent.fold(false)(_.nonEmpty)
     }

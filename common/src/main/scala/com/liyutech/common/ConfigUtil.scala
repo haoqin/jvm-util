@@ -19,7 +19,7 @@ object ConfigUtil {
   def loadConfig(secretConfigFilePath: String, applicationConfPath: String): Config = {
     Path(secretConfigFilePath).createFile().appendAll(
       "\n",
-      CommonUtil.readFileAsString(applicationConfPath)
+      CommonUtil.readFileAsOptionString(applicationConfPath, ".").fold(".")(identity)
     )
     val conf: Config = ConfigFactory.parseFileAnySyntax(new File(secretConfigFilePath))
     Path(secretConfigFilePath).delete()
