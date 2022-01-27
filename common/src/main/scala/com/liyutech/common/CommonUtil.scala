@@ -8,12 +8,6 @@ import java.util.Date
 import scala.jdk.CollectionConverters._
 
 object CommonUtil {
-  val srcDir = s"${CurrentClassPath()}/src"
-  val srcMainDir = s"$srcDir/main"
-  val scalaRootDir = s"$srcMainDir/scala"
-  val SrcResourceDir = s"$srcMainDir/resources"
-  val TestResourceDir = s"$srcDir/test/resources"
-
   def firstLetterUppercase(str: String): String = {
     Option(str).map(s => s"${s.head.toUpper}${s.tail}").fold(str)(identity)
   }
@@ -22,18 +16,20 @@ object CommonUtil {
     val suffix = i.toString.last match {
       case '2' => "nd"
       case '3' => "rd"
-      case a => "th"
+      case _ => "th"
     }
     s"$i$suffix"
   }
 
-  def CurrentClassPath(module: String = ""): String = {
-    val file = new java.io.File(".")
-    val path: String = file.getCanonicalPath
-    path
+  def currentClassPath(): String = {
+    classLoaderPath(getClass)
   }
 
-  def fullFilePath(path: String, prefixPath: String = SrcResourceDir): String = s"$prefixPath/$path"
+  def classLoaderPath(clazz: Class[_]): String = {
+    clazz.getProtectionDomain.getCodeSource.getLocation.getPath
+  }
+
+  def fullFilePath(path: String, prefixPath: String = currentClassPath()): String = s"$prefixPath/$path"
 
   def readAsString(file: File): String = {
     val f = scala.io.Source.fromFile(file)
@@ -87,7 +83,7 @@ object CommonUtil {
   }
 
   def findFirstMatchDirectory(targetDir: String): Option[File] = {
-    findFirstMatchDirectory(CurrentClassPath(), targetDir)
+    findFirstMatchDirectory(currentClassPath(), targetDir)
   }
 
   def findFirstMatchDirectory(rootPath: String, targetDir: String): Option[File] = {

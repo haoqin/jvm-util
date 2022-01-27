@@ -5,7 +5,7 @@ case class USZipCodeInfo(stateCode: String, city: String, state: String, zipCode
 object USCommons {
   private val UsFirstNameFileName = "USFirstNames.txt"
   private val NewLineDelimiter = "\n"
-  val commonDir: String = CommonUtil.findFirstMatchedRegularFile(CommonUtil.CurrentClassPath(), UsFirstNameFileName).fold("") { file =>
+  val commonDir: String = CommonUtil.findFirstMatchedRegularFile(CommonUtil.currentClassPath(), UsFirstNameFileName).fold("") { file =>
     file.getParentFile.getAbsolutePath
   }
   //  val commonDir: String = CommonUtil.findFirstMatchDirectory(s"common/src/main/resources").fold("")(_.getAbsolutePath)
