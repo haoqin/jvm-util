@@ -38,12 +38,12 @@ object CommonUtil {
     output
   }
 
-  def readFileAsOptionString(fileName: String, prefixPath: String = "."): Option[String] = {
+  def readFileAsOptionString(fileName: String, prefixPath: String = ""): Option[String] = {
     val optFile: Option[File] = findFirstMatchedRegularFile(prefixPath, fileName)
     optFile.map(readAsString)
   }
 
-  def readFileAsString(fileName: String, prefixPath: String = "."): String = {
+  def readFileAsString(fileName: String, prefixPath: String = ""): String = {
     readFileAsOptionString(fileName, prefixPath).fold("")(identity)
   }
 
