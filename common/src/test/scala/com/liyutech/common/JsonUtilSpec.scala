@@ -8,11 +8,15 @@ class JsonUtilSpec extends AsyncFlatSpec {
   import JsonUtil._
   import io.circe.parser._
 
-  "JsonUtil" should "validate simple value types" ignore {
+  "JsonUtil" should "validate simple value types" in {
+    // A null field is considered a valid match against all json types. This is a practical compromise in that a js null
+    // has no type information at all.
     val happyPaths = Json.Null.schemaMismatches(Json.Null).isEmpty &&
-      Json.fromInt(1).schemaMismatches(Json.fromInt(1)).isEmpty
-    val errorPaths = Set(Json.Null, Json.fromBoolean(true)).forall(Json.fromInt(1).schemaMismatches(_).nonEmpty) &&
-      Set(Json.fromInt(1), Json.fromBoolean(true)).forall(Json.Null.schemaMismatches(_).nonEmpty)
+      Json.fromInt(1).schemaMismatches(Json.fromInt(1)).isEmpty &&
+      Set(Json.Null).forall(Json.fromInt(1).schemaMismatches(_).isEmpty) &&
+      Set(Json.fromInt(1), Json.fromBoolean(true)).forall(Json.Null.schemaMismatches(_).isEmpty)
+
+    val errorPaths =  Set(Json.fromBoolean(true)).forall(Json.fromInt(1).schemaMismatches(_).nonEmpty)
 
     assert(happyPaths && errorPaths)
   }
@@ -33,12 +37,12 @@ class JsonUtilSpec extends AsyncFlatSpec {
   }
 
   "JsonUtil" should "validate complex json objects" in {
-    val sourceSchema = parse(CommonUtil.readFileAsString("DynamicJsonSchema.json"))
+    val sourceSchema = parse(CommonUtil.readFileAsOptionString("DynamicJsonSchema.json").fold("")(identity))
     val happyPath = for {
       schema <- sourceSchema
     } yield schema.schemaMismatches(schema)
 
-    val mismatchedSchema = parse(CommonUtil.readFileAsString("MismatchedJsonSchema.json"))
+    val mismatchedSchema = parse(CommonUtil.readFileAsOptionString("MismatchedJsonSchema.json").fold("")(identity))
     val errorPath = for {
       schema <- sourceSchema
       mismatched <- mismatchedSchema

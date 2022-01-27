@@ -12,14 +12,17 @@ class ConfigUtilSpec extends AsyncFlatSpec {
     val tmpFilePath: String = "/tmp/actual_combined.conf"
 
     Path(tmpFilePath).delete()
-    Path(tmpFilePath).createFile().appendAll(CommonUtil.readFileAsString("secure.conf"))
+
     val classPathRoot = CommonUtil.classLoaderPath(this.getClass)
 
+    Path(tmpFilePath).createFile().appendAll(CommonUtil.readFileAsString(s"${classPathRoot}secure.conf"))
+
     val expectedConfigFileName = "expected_combined.conf"
-    val expectedCombinedConf = ConfigFactory.parseFileAnySyntax(new File(s"$classPathRoot$expectedConfigFileName"))
+    val expectedConfigFile = new File(s"$classPathRoot$expectedConfigFileName")
+    val expectedCombinedConf = ConfigFactory.parseFileAnySyntax(expectedConfigFile)
     val entrySet0 = expectedCombinedConf.entrySet()
 
-    val actualCombinedConf: Config = ConfigUtil.loadConfig(tmpFilePath, expectedConfigFileName)
+    val actualCombinedConf: Config = ConfigUtil.loadConfig(new File(tmpFilePath), expectedConfigFile)
     val entrySet1 = actualCombinedConf.entrySet()
     assert {
       entrySet0.size() == entrySet1.size() && entrySet0.containsAll(entrySet1) && entrySet1.containsAll(entrySet0)

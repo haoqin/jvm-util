@@ -32,6 +32,7 @@ object CommonUtil {
 
   def fullFilePath(path: String, prefixPath: String = currentClassPath()): String = s"$prefixPath/$path"
 
+  // The file will be closed after its content is returned.
   def readAsString(file: File): String = {
     val f = scala.io.Source.fromFile(file)
     val output = f.mkString
@@ -39,7 +40,7 @@ object CommonUtil {
     output
   }
 
-  def readFileAsOptionString(fileName: String, prefixPath: String = ""): Option[String] = {
+  def readFileAsOptionString(fileName: String, prefixPath: String = "."): Option[String] = {
     val optFile: Option[File] = findFirstMatchedRegularFile(prefixPath, fileName)
     optFile.map(readAsString)
   }
