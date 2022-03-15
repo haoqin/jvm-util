@@ -37,7 +37,7 @@ trait TestDataGen extends ScalaCheckGenerator {
       id = randomUUID(),
       uid = randomUUID(),
       personId = Option(randomUUID()),
-      profileImage = new String(Base64.getEncoder.encode(randomAlphaNumericStr(20000).getBytes)),
+      profileImage = new String(Base64.getEncoder.encode(randomAlphaNumericStr(20).getBytes)),
       firstName = randomFirstName,
       lastName = randomLastName,
       username = randomUserName,

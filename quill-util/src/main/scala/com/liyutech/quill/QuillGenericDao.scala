@@ -6,6 +6,8 @@ import io.getquill.{H2JdbcContext, NamingStrategy, PostgresJdbcContext, SnakeCas
 
 import scala.language.experimental.macros
 
+// TODO: This is integration test requiring connection to a remote db server. Test the logic using an embedded db instead.
+
 // Inspired by the examples from https://github.com/getquill/quill-example/tree/4723a5e482efb75b04371ad1d6410219b0893364
 class QuillH2GenericDao[N <: NamingStrategy](namingStrategy: N, dbConfig: Config) extends H2JdbcContext(namingStrategy, dbConfig) with QuillGenericMacro
 

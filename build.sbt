@@ -4,7 +4,7 @@ lazy val CirceVersion = "0.12.3"
 
 ThisBuild / organization := "com.liyutech"
 ThisBuild / scalaVersion := "2.13.4"
-ThisBuild / version := "0.1.3"
+ThisBuild / version := "0.1.4"
 ThisBuild / versionScheme := Some("early-semver")
 
 lazy val commonSettings = Seq(

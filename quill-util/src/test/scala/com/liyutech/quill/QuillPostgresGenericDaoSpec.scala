@@ -7,6 +7,7 @@ import org.scalatestplus.scalacheck.{Checkers, ScalaCheckPropertyChecks}
 
 import java.time.LocalDateTime
 
+// TODO: This is integration test requiring connection to a remote db server. Test the logic using an embedded db instead.
 class QuillPostgresGenericDaoSpec extends AsyncFlatSpec with Checkers with ScalaCheckPropertyChecks {
   val quillDao = QuillGenericDao.defaultPostgresGenericDao("test-postgres")
 
@@ -18,7 +19,7 @@ class QuillPostgresGenericDaoSpec extends AsyncFlatSpec with Checkers with Scala
   //    println("beforeAll 2")
   //  }
 
-  "QuillPostgresGenericDao findGroupMax()" should "find the maximum for records grouped by a given function" in {
+  "QuillPostgresGenericDao findGroupMax()" should "find the maximum for records grouped by a given function" ignore {
     // println(s"1111: ${quillDao.findAll[Pod].size}")
     println("===")
     //    quillDao.deleteAll[OrcaUser]
@@ -34,7 +35,7 @@ class QuillPostgresGenericDaoSpec extends AsyncFlatSpec with Checkers with Scala
     assert(groupMax.size > 0)
   }
 
-  "QuillPostgresGenericDao findGroup2Max()" should "find the maximum for records grouped by a given function" in {
+  "QuillPostgresGenericDao findGroup2Max()" should "find the maximum for records grouped by a given function" ignore {
     import quillDao._
 
     //    dynamicQuery[OrcaUser].groupBy[(String, String)] { user => (user.id, user.username) }.map {
