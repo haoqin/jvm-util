@@ -1,8 +1,8 @@
-package com.liyutech.common.data.codegen
+// package com.liyutech.common.data.codegen
 
-import org.scalacheck.Gen
-import scala.language.experimental.macros
+// import org.scalacheck.Gen
 
-object ArbitraryProduct {
-  def arbitrary[T]: Gen[T] = macro ArbitraryProductMacro.arbitrary[T]
-}
+// object ArbitraryProduct {
+//     import org.scalacheck.ScalacheckShapeless.derivedArbitrary
+//   def arbitrary[T]: Gen[T] = macro ArbitraryProductMacro.arbitrary[T]
+// }
