@@ -28,7 +28,6 @@ lazy val commonSettings = Seq(
 
 lazy val quillSettings = Seq(
   libraryDependencies ++= Seq(
-    "io.getquill" %% "quill-codegen-jdbc" % QuillVersion,
     "io.getquill" %% "quill-jdbc" % QuillVersion
   )
 )
@@ -41,26 +40,22 @@ lazy val quillSettings = Seq(
 lazy val root = (project in file("."))
   .settings(
     name := "jvm-util"
-  ).aggregate(common)
-  .dependsOn(common)
+  ).aggregate(common, quillUtil)
+  .dependsOn(common, quillUtil)
 
 lazy val common = (project in file("common")).settings(name := "common", commonSettings)
 lazy val testUtil = (project in file("test-util")).settings(name := "test-util", commonSettings)
   .aggregate(common)
   .dependsOn(common)
 
-//lazy val gen = (project in file("quill-gen"))
-//  .settings(name := "quill-gen", commonSettings, quillSettings)
-//  .aggregate(common)
-//  .dependsOn(common)
-//
-//lazy val quillUtil = (project in file("quill-util"))
-//  .settings(name := "quill-util",
-//    libraryDependencies ++= Seq(
-//      "com.h2database" % "h2" % "1.4.199",
-//      "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
-//      "org.flywaydb" % "flyway-core" % "8.1.0"
-//    ),
-//    commonSettings,
-//    quillSettings)
-//  .dependsOn(gen)
+lazy val quillUtil = (project in file("quill-util"))
+ .settings(name := "quill-util",
+   libraryDependencies ++= Seq(
+     "com.h2database" % "h2" % "1.4.199",
+     "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
+     "org.flywaydb" % "flyway-core" % "8.1.0"
+   ),
+   commonSettings,
+   quillSettings)
+   .aggregate(common)
+ .dependsOn(common)

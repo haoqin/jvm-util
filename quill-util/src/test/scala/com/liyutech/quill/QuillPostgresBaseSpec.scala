@@ -1,5 +1,6 @@
 package com.liyutech.quill
 
-trait QuillPostgresBaseSpec extends QuillBaseSpec {
-  protected val quillDao = new QuillPostgresGenericDao(dbConfig)
-}
+import io.getquill.PostgresJdbcContext
+import io.getquill.SnakeCase
+
+trait QuillPostgresBaseSpec extends QuillBaseSpec

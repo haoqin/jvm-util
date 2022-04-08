@@ -4,6 +4,7 @@ import com.liyutech.common.ConfigUtil
 import com.liyutech.quill.model.OrcaUser
 import com.typesafe.config.Config
 import io.getquill.{H2JdbcContext, SnakeCase}
+import io.getquill.*
 
 object QuillExploreMain {
   private val config: Config = ConfigUtil.loadConfig("test")
