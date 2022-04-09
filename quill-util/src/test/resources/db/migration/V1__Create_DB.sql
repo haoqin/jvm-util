@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS orca;
+CREATE SCHEMA IF NOT EXISTS PUBLIC;
 
-CREATE TABLE IF NOT EXISTS orca.orca_user
+CREATE TABLE IF NOT EXISTS PUBLIC.orca_user
 (
   id VARCHAR(36) NOT NULL,
   uid VARCHAR(36) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS orca.orca_user
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.pod
+CREATE TABLE IF NOT EXISTS PUBLIC.pod
 (
   id VARCHAR(36) NOT NULL,
   pod_username VARCHAR(36) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS orca.pod
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.user_pod_lookup
+CREATE TABLE IF NOT EXISTS PUBLIC.user_pod_lookup
 (
   id VARCHAR(36) NOT NULL,
   user_id VARCHAR(36) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS orca.user_pod_lookup
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.expense
+CREATE TABLE IF NOT EXISTS PUBLIC.expense
 (
   id VARCHAR(36) NOT NULL,
   sender_user_id VARCHAR(36) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS orca.expense
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.orca_transaction
+CREATE TABLE IF NOT EXISTS PUBLIC.orca_transaction
 (
   id VARCHAR(36) NOT NULL,
   pod_user_id VARCHAR(36) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS orca.orca_transaction
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.user_balance
+CREATE TABLE IF NOT EXISTS PUBLIC.user_balance
 (
   id VARCHAR(36) NOT NULL,
   user_id VARCHAR(36) NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS orca.user_balance
 );
 
 
-CREATE TABLE IF NOT EXISTS orca.notification
+CREATE TABLE IF NOT EXISTS PUBLIC.notification
 (
   id VARCHAR(36) NOT NULL,
   sender_user_id VARCHAR(36) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS orca.notification
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.notification_token
+CREATE TABLE IF NOT EXISTS PUBLIC.notification_token
 (
   id VARCHAR(36) NOT NULL,
   user_id VARCHAR(36) NOT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS orca.notification_token
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.friend
+CREATE TABLE IF NOT EXISTS PUBLIC.friend
 (
   id VARCHAR(36) NOT NULL,
   requester_user_id VARCHAR(36) NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS orca.friend
   updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS orca.user_account_lookup
+CREATE TABLE IF NOT EXISTS PUBLIC.user_account_lookup
 (
   id VARCHAR(36) NOT NULL,
   user_id VARCHAR(36) NOT NULL,

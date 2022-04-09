@@ -5,8 +5,28 @@ import org.scalatest.flatspec.AsyncFlatSpec
 
 import java.time.LocalDateTime
 
+// object TypeUtilSpec:
+sealed trait SimpleTrait
+case object A extends SimpleTrait
+case class B() extends SimpleTrait
+
+enum SimpleEnum:
+  case E0, E1, E2, E3, E4
+
 class TypeUtilSpec extends AsyncFlatSpec {
-  "ShapelessUtil ModelTransformer" should "support migration of a model to another with fewer fields" in {
+  
+  "TypeUtil canBeAssignedTo" should "determione if a type belongs to the set of all implementatoins of the same sealed trait" in {
+    import TypeUtil.*
+    import SimpleEnum.*
+    assert(canBeAssignedTo[B, SimpleTrait] && canBeAssignedTo[B, SimpleTrait] && canBeAssignedTo[SimpleEnum, SimpleEnum] && canBeAssignedTo[E3.type, SimpleEnum])
+  }
+
+  "TypeUtil sumTypeCount" should "count the number of sum types in an enum or the set of all implementatoins of the same sealed trait" in {
+    import TypeUtil.*
+    assert(sumTypeCount[SimpleTrait] == 2 && sumTypeCount[SimpleEnum] == 5)
+  }
+
+  "TypeUtil ModelTransformer" should "support migration of a model to another with fewer fields" in {
     val orcaUser: OrcaUser = OrcaUser("803f-1d5h2AbE01W-4b4c-b561b-9ceb29841629b", "1d5h2AbE01W", "Mike Darell", "profile.png", "Mike", "Darell", LocalDateTime.parse("2001-05-11T01:21:24.99"), "ab@cde.de", "+12148366351", "US", None, None, None, None, None, None, LocalDateTime.now())
     import TypeUtil.*
     val userLoginModel: UserLoginModel = orcaUser.projectTo[UserLoginModel]
