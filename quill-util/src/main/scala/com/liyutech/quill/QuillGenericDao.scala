@@ -14,7 +14,7 @@ object QuillGenericDao {
   implicit class JdbcContextDecorator[D <: SqlIdiom, N <: NamingStrategy](dao: JdbcContext[D, N]) {
     import dao.*
     inline def find[T](filter: T => Boolean): Seq[T] = run(query[T].filter(filter))
-    inline def findBy[T, I](id: I, extractId: T => I): Seq[T] = run(query[T].filter(m => extractId(m) == id))
+    inline def findBy[T, I](id: I, extractId: T => I): Seq[T] = run(query[T].filter(m => extractId(m) == lift(id)))
     inline def findAll[T]: Seq[T] = run(query[T])
 
     // Find max by id and max:
@@ -37,10 +37,9 @@ object QuillGenericDao {
 
     inline def autoKeyAfterInsert[T, R](entity: T, extractPrimaryKey: T => R): R  = run(autoKeyAfterInsertAction(entity, extractPrimaryKey))
 
-    inline def autoKeysAfterInsert[T, R](entities: Seq[T], extractPrimaryKey: T => R): Seq[R]  =
-      transaction[Seq[R]] {
-        entities.map(entity => run(autoKeyAfterInsertAction(entity, extractPrimaryKey)))
-      }
+    inline def autoKeysAfterInsert[T, R](entities: Seq[T], extractPrimaryKey: T => R): Seq[R] = transaction[Seq[R]] {
+      entities.map(entity => run(autoKeyAfterInsertAction(entity, extractPrimaryKey)))
+    }
 
     inline def autoKeyAfterInsertAction[T, R](entity: T, extractPrimaryKey: T => R): ActionReturning[T, R] = 
       query[T].insertValue(lift(entity)).returningGenerated(extractPrimaryKey)

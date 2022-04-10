@@ -12,6 +12,7 @@ import scala.deriving.Mirror
 import com.liyutech.common.meta.RandomGen
 import com.liyutech.quill.model.Pod
 import com.liyutech.quill.model.PodAutokey
+import scala.util.Random
 
 class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndAfterEach {
   val quillDao = QuillBaseSpec.h2Dao
@@ -33,11 +34,19 @@ class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndA
     insertUsers(modelsPerIteration)
   }
 
+
+  private def generateRandomUsers(n: Int): Seq[OrcaUser] = 
+    (0 until modelsPerIteration).map(_ => generateRandom[OrcaUser]).map(toReadableUser)
+
   private def insertUsers(n: Int): Seq[OrcaUser] = {
-    val models: Seq[OrcaUser] = (0 until modelsPerIteration).map(_ => generateRandom[OrcaUser]).map(toReadableUser)
+    val models: Seq[OrcaUser] = generateRandomUsers(n)
     quillDao.insertAll[OrcaUser](models)
     models
   }
+
+
+  private def generateRandomPods(n: Int): Seq[PodAutokey] = 
+    (0 until modelsPerIteration).map(_ => generateRandom[PodAutokey]).map(toReadablePodAutoKey)
 
   private def insertPods(n: Int): Seq[PodAutokey] = {
     val models: Seq[PodAutokey] = generateRandomPods(n)
@@ -45,8 +54,6 @@ class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndA
     models
   }
 
-  private def generateRandomPods(n: Int): Seq[PodAutokey] = 
-    (0 until modelsPerIteration).map(_ => generateRandom[PodAutokey]).map(toReadablePodAutoKey)
 
   "QuillGenericDao find[T]" should "find records satisfying the given filter" in {
     val users = quillDao.find[OrcaUser](userFilter)
@@ -57,6 +64,19 @@ class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndA
     val users = quillDao.findBy[OrcaUser, String](usCitizenship, _.citizenship)
     assert(users.forall(citizenshipFilter))
   }
+
+  "QuillGenericDao findMax[T]" should "find the maximal/latest record whose id match the given id" in {
+
+    val randomUser: OrcaUser = toReadableUser(generateRandom[OrcaUser])
+    val updatedAt: LocalDateTime = randomUser.updatedAt
+    // duplicate the same user n times, with the updatedAt fields in the descending order
+
+    val updatedUserRecords: Seq[OrcaUser] = (0 until modelsPerIteration).map(i => randomUser.copy(updatedAt = updatedAt.minusDays(i)))
+    quillDao.insertAll(updatedUserRecords)
+    val latestUserRecord: Option[OrcaUser] = quillDao.findMax[OrcaUser, String, LocalDateTime](randomUser.uid, _.uid, _.updatedAt)
+    assert(latestUserRecord.isDefined && latestUserRecord.get.updatedAt.isEqual(updatedAt))
+  }
+  
 
   "QuillGenericDao findAll[T]" should "find all records from a table" in {
     val allUsers = quillDao.findAll[OrcaUser]
