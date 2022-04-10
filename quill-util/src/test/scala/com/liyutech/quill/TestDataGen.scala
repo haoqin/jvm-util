@@ -14,6 +14,7 @@ import com.liyutech.quill.model.{OrcaUser, Pod}
 import java.util.{Base64, Date}
 import scala.util.Random
 import java.util.UUID
+import com.liyutech.quill.model.PodAutokey
 
 trait TestDataGen {
   protected val DefaultCitizenship = "US"
@@ -109,16 +110,28 @@ trait TestDataGen {
       updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow)))
   }
 
-//   protected def toReadablePod(model: Pod): Pod = {
-//     val podDescription: String = randomTwoUpperCamelNouns()
-//     val podUserName: String = podDescription.toLowerCase.replaceAll(" ", ".")
-//     model.copy(
-//       id = randomUUID(),
-//       podUsername = podUserName,
-//       podName = Option(podUserName),
-//       podDescription = Option(podDescription),
-//       emoji = model.emoji.map(_ => randomEmoji),
-//       updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
-//     )
-//   }
+  protected def toReadablePod(model: Pod): Pod = {
+    val podDescription: String = randomTwoUpperCamelNouns()
+    val podUserName: String = podDescription.toLowerCase.replaceAll(" ", ".")
+    model.copy(
+      id = randomUUID(),
+      podUsername = podUserName,
+      podName = Option(podUserName),
+      podDescription = Option(podDescription),
+      emoji = model.emoji.map(_ => randomEmoji),
+      updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
+    )
+  }
+
+  protected def toReadablePodAutoKey(model: PodAutokey): PodAutokey = {
+    val podDescription: String = randomTwoUpperCamelNouns()
+    val podUserName: String = podDescription.toLowerCase.replaceAll(" ", ".")
+    model.copy(
+      podUsername = podUserName,
+      podName = Option(podUserName),
+      podDescription = Option(podDescription),
+      emoji = model.emoji.map(_ => randomEmoji),
+      updatedAt = CommonUtil.minusDays(new Date(), Random.nextLong(earliestUpdatedAtTimeFromNow))
+    )
+  }
 }

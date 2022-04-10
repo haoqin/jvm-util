@@ -34,8 +34,8 @@ lazy val quillSettings = Seq(
 //lazy val root = (project in file("."))
 //  .settings(
 //    name := "jvm-util",
-//  ).aggregate(common, testUtil, gen, quillUtil)
-//  .dependsOn(common, testUtil, gen, quillUtil)
+//  ).aggregate(common, testUtil, quillUtil)
+//  .dependsOn(common, testUtil,  quillUtil)
 
 lazy val root = (project in file("."))
   .settings(
@@ -49,7 +49,7 @@ lazy val testUtil = (project in file("test-util")).settings(name := "test-util",
   .dependsOn(common)
 
 lazy val quillUtil = (project in file("quill-util"))
- .settings(name := "quill-util",
+.settings(name := "quill-util",
    libraryDependencies ++= Seq(
      "com.h2database" % "h2" % "1.4.199",
      "org.postgresql" % "postgresql" % "9.4-1206-jdbc42",
@@ -57,5 +57,5 @@ lazy val quillUtil = (project in file("quill-util"))
    ),
    commonSettings,
    quillSettings)
-   .aggregate(common)
- .dependsOn(common)
+.aggregate(common)
+.dependsOn(common)
