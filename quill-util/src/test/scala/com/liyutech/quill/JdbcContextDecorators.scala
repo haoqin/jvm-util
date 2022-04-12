@@ -11,7 +11,7 @@ object JdbcContextDecorators {
   extension[D <: SqlIdiom, N <: NamingStrategy](ctx: JdbcContext[D, N]) {
     def findSimpleUser(): List[SimpleUser] = {
       import ctx._
-      ctx.run(querySchema[SimpleUser]("user"))
+      run(querySchema[SimpleUser]("user"))
     }
   }
 }

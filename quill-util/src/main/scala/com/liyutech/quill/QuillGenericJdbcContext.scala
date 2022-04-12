@@ -8,12 +8,13 @@ import io.getquill.parser.engine.Parser
 import scala.quoted.*
 import io.getquill.ast.AggregationOperator.max
 
-object QuillGenericDao {
+object QuillGenericJdbcContext {
   // implicit classes have an advantage over extension methods in that the former allow import statements outside of
   // any method.
   implicit class JdbcContextDecorator[D <: SqlIdiom, N <: NamingStrategy](dao: JdbcContext[D, N]) {
     import dao.*
-    inline def find[T](filter: T => Boolean): Seq[T] = run(query[T].filter(filter))
+    // Using Scala 3, the find[T].filter function works for h2 but not postgres. It worked well with Scala 2 macro.
+    // inline def find[T](filter: T => Boolean): Seq[T] = run(query[T].filter(filter))
     inline def findBy[T, I](id: I, extractId: T => I): Seq[T] = run(query[T].filter(m => extractId(m) == lift(id)))
     inline def findAll[T]: Seq[T] = run(query[T])
 
@@ -26,7 +27,7 @@ object QuillGenericDao {
 
     inline def deleteAll[T]: Long = run(query[T].delete)
 
-    inline def insert[T](entity: T): Long = run(query[T].insertValue(entity))
+    inline def insert[T](entity: T): Long = run(query[T].insertValue(lift(entity)))
     inline def insertAll[T](entities: Seq[T]): Seq[Long] = run {
       liftQuery(entities).foreach(c => query[T].insertValue(c))
     }

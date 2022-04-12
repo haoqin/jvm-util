@@ -2,7 +2,7 @@ package com.liyutech.quill
 
 import com.liyutech.common.meta.TypeUtil
 import com.liyutech.quill.QuillBaseSpec
-import com.liyutech.quill.QuillGenericDao
+import com.liyutech.quill.QuillGenericJdbcContext
 import com.liyutech.quill.model.OrcaUser
 import java.time.LocalDateTime
 import com.liyutech.common.meta.DataGen
@@ -14,11 +14,11 @@ import com.liyutech.quill.model.Pod
 import com.liyutech.quill.model.PodAutokey
 import scala.util.Random
 
-class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndAfterEach {
+class QuillGenericJdbcContextSpec extends QuillBaseSpec with TestDataGen with BeforeAndAfterEach {
   val quillDao = QuillBaseSpec.h2Dao
   import quillDao.*
   import io.getquill.*
-  import QuillGenericDao.*
+  import QuillGenericJdbcContext.*
   import DataGen.{given, *}
   import TypeUtil.*
   private inline val usCitizenship = "US"
@@ -54,11 +54,6 @@ class QuillGenericDaoSpec extends QuillBaseSpec with TestDataGen with BeforeAndA
     models
   }
 
-
-  "QuillGenericDao find[T]" should "find records satisfying the given filter" in {
-    val users = quillDao.find[OrcaUser](userFilter)
-    assert(users.forall(userFilter))
-  }
 
   "QuillGenericDao findBy[T]" should "find records whose ids match the given id" in {
     val users = quillDao.findBy[OrcaUser, String](usCitizenship, _.citizenship)
