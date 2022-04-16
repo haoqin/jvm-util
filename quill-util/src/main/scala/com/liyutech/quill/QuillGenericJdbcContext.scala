@@ -25,7 +25,7 @@ object QuillGenericJdbcContext {
     inline def findGroupMax[T, G, M:Ordering](groupBy: T => G, maxBy: T => M): Seq[T] = 
       findAll[T].groupBy(groupBy).map((groupId, models) => models.maxBy(maxBy)).toSeq
 
-    inline def deleteAll[T]: Long = run(query[T].delete)
+    inline def deleteAll[T](): Long = run(query[T].delete)
 
     inline def insert[T](entity: T): Long = run(query[T].insertValue(lift(entity)))
     inline def insertAll[T](entities: Seq[T]): Seq[Long] = run {

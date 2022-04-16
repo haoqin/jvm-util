@@ -1,7 +1,9 @@
 package com.liyutech.common.meta
-import scala.compiletime.{constValue, erasedValue, summonInline, summonAll}
+import scala.compiletime.{constValue, erasedValue, summonInline, summonAll, error}
 
 import scala.deriving.Mirror
+import scala.runtime.stdLibPatches.language.experimental.namedTypeArguments
+import org.scalacheck.Gen.Choose.IllegalBoundsError
 
 object TypeUtil {
 
@@ -31,11 +33,23 @@ object TypeUtil {
       fieldValue == anotherFieldValue
     }
   
-  extension[P <: Product](p: P)
+  extension[P <: Product](p: P) {
     inline def projectTo[S <: Product](using mS: Mirror.ProductOf[S]): S = {
-    val projectedTuple = summonProjectable[P, mS.MirroredElemLabels, mS.MirroredElemTypes](p)
-    mS.fromProduct(projectedTuple)
+      val projectedTuple = summonProjectable[P, mS.MirroredElemLabels, mS.MirroredElemTypes](p)
+      mS.fromProduct(projectedTuple)
+    }
+    // From the given product, extracts the singleton type F and returns the given type E.
+    // Usage example: val updatedAt: LocalDateTime user.extractField["updatedAt", LocalDateTime]
+    inline def extractField[F, E](using mS: Mirror.ProductOf[P]): E = 
+      extractSingleField[mS.MirroredElemLabels, mS.MirroredElemTypes, F, E](Tuple.fromProduct(p))
   }
+
+  private inline def extractSingleField[N <: Tuple, T <: Tuple, F, E](p: Tuple): E = 
+    inline (erasedValue[N], erasedValue[T]) match
+      case _: (EmptyTuple, EmptyTuple) => error("Cannot extract the field ===") //error(s"Cannot extract the field")
+      case _: (F *: nT, E *: tT) => p.productElement(0).asInstanceOf[E]
+      case _: (F *: nT, _ *: tT) => error("Cannot extract the field !!!")
+      case _: (_ *: nT, _ *: tT) => extractSingleField[nT, tT, F, E](p.drop(1))
 
   private inline def summonProjectable[L <: Product, N <: Tuple, T <: Tuple](m: L): Tuple = {
     val names = m.productElementNames.toSeq
@@ -59,4 +73,6 @@ object TypeUtil {
         }
 
   }
+
+
 }

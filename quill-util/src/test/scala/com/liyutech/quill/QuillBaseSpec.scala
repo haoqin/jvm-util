@@ -16,9 +16,9 @@ import java.time.LocalDateTime
 trait QuillBaseSpec extends AsyncFlatSpec with Checkers with ScalaCheckPropertyChecks
 
 object QuillBaseSpec:
-  val h2Config: Config = ConfigUtil.loadConfig("H2")
-  val h2DbConfig: Config = h2Config.getConfig("db")
-  val h2Dao: H2JdbcContext[SnakeCase] = new H2JdbcContext(SnakeCase, h2DbConfig)
-  val postgresConfig: Config = ConfigUtil.loadConfig("Postgres")
-  val postgresDbConfig: Config = postgresConfig.getConfig("db")
-  val postgresDao: PostgresJdbcContext[SnakeCase] = PostgresJdbcContext(SnakeCase, postgresDbConfig)
+  lazy val h2Config: Config = ConfigUtil.loadConfig("H2")
+  lazy val h2DbConfig: Config = h2Config.getConfig("db")
+  lazy val h2Dao: H2JdbcContext[SnakeCase] = new H2JdbcContext(SnakeCase, h2DbConfig)
+  lazy val postgresConfig: Config = ConfigUtil.loadConfig("Postgres")
+  lazy val postgresDbConfig: Config = postgresConfig.getConfig("db")
+  lazy val postgresDao: PostgresJdbcContext[SnakeCase] = PostgresJdbcContext(SnakeCase, postgresDbConfig)

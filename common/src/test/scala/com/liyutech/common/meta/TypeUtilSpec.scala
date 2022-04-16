@@ -14,6 +14,11 @@ enum SimpleEnum:
   case E0, E1, E2, E3, E4
 
 class TypeUtilSpec extends AsyncFlatSpec {
+
+  private val orcaUserId = "803f-1d5h2AbE01W-4b4c-b561b-9ceb29841629b"
+  private val orcaUserUid = "1d5h2AbE01W"
+  private lazy val updatedAt = LocalDateTime.now()
+  private val orcaUser: OrcaUser = OrcaUser(orcaUserId, orcaUserUid, "Mike Darell", "profile.png", "Mike", "Darell", LocalDateTime.parse("2001-05-11T01:21:24.99"), "ab@cde.de", "+12148366351", "US", None, None, None, None, None, None, updatedAt)
   
   "TypeUtil canBeAssignedTo" should "determione if a type belongs to the set of all implementatoins of the same sealed trait" in {
     import TypeUtil.*
@@ -27,10 +32,14 @@ class TypeUtilSpec extends AsyncFlatSpec {
   }
 
   "TypeUtil ModelTransformer" should "support migration of a model to another with fewer fields" in {
-    val orcaUser: OrcaUser = OrcaUser("803f-1d5h2AbE01W-4b4c-b561b-9ceb29841629b", "1d5h2AbE01W", "Mike Darell", "profile.png", "Mike", "Darell", LocalDateTime.parse("2001-05-11T01:21:24.99"), "ab@cde.de", "+12148366351", "US", None, None, None, None, None, None, LocalDateTime.now())
     import TypeUtil.*
     val userLoginModel: UserLoginModel = orcaUser.projectTo[UserLoginModel]
     println(s"userLoginModel\n$userLoginModel")
     assert(userLoginModel.isProjectionOf(orcaUser))
+  }
+
+  "TypeUtil extractField" should "extract a field with the given name and type from a case class instance" in {
+    import TypeUtil.*
+    assert(orcaUserId == orcaUser.extractField["id", String] && updatedAt == orcaUser.extractField["updatedAt", LocalDateTime])
   }
 }
