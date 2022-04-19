@@ -34,7 +34,6 @@ class QuillGenericJdbcContextSpec extends QuillBaseSpec with TestDataGen with Be
     insertUsers(modelsPerIteration)
   }
 
-
   private def generateRandomUsers(n: Int): Seq[OrcaUser] = 
     (0 until modelsPerIteration).map(_ => generateRandom[OrcaUser]).map(toReadableUser)
 
@@ -54,10 +53,23 @@ class QuillGenericJdbcContextSpec extends QuillBaseSpec with TestDataGen with Be
     models
   }
 
-
   "QuillGenericDao findBy[T]" should "find records whose ids match the given id" in {
-    val users = quillDao.findBy[OrcaUser, String](usCitizenship, _.citizenship)
+    val users = quillDao.findBy[OrcaUser, String](usCitizenship, _.phoneNumber)
     assert(users.forall(citizenshipFilter))
+  }
+
+  "QuillGenericDao findBy[T]" should "find records whose ids are in the list of predefined ids" in {
+    val n = 30
+    val phoneNumbers = Seq("123-456-7890", "123-456-7891")
+
+    val moreUsers = generateRandomUsers(n).zipWithIndex.map { case (user, i) =>
+      val phoneNumber = phoneNumbers(i % phoneNumbers.size)
+      user.copy(phoneNumber = phoneNumber)
+    }
+    quillDao.insertAll(moreUsers)
+    val users = quillDao.findBy[OrcaUser, String](phoneNumbers, _.phoneNumber)
+    users.map(_.phoneNumber).foreach(println)
+    assert(users.forall(u => phoneNumbers.contains(u.phoneNumber)))
   }
 
   "QuillGenericDao findMax[T]" should "find the maximal/latest record whose id match the given id" in {
@@ -69,7 +81,8 @@ class QuillGenericJdbcContextSpec extends QuillBaseSpec with TestDataGen with Be
     val updatedUserRecords: Seq[OrcaUser] = (0 until modelsPerIteration).map(i => randomUser.copy(updatedAt = updatedAt.minusDays(i)))
     quillDao.insertAll(updatedUserRecords)
     val latestUserRecord: Option[OrcaUser] = quillDao.findMax[OrcaUser, String, LocalDateTime](randomUser.uid, _.uid, _.updatedAt)
-    assert(latestUserRecord.isDefined && latestUserRecord.get.updatedAt.isEqual(updatedAt))
+    val nonExistingRecord: Option[OrcaUser] = quillDao.findMax[OrcaUser, String, LocalDateTime](randomUser.uid + randomUser.uid , _.uid, _.updatedAt)
+    assert(nonExistingRecord.isEmpty && latestUserRecord.isDefined && latestUserRecord.get.updatedAt.isEqual(updatedAt) )
   }
   
 

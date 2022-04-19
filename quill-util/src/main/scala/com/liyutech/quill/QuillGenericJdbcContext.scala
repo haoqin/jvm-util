@@ -16,6 +16,9 @@ object QuillGenericJdbcContext {
     // Using Scala 3, the find[T].filter function works for h2 but not postgres. It worked well with Scala 2 macro.
     // inline def find[T](filter: T => Boolean): Seq[T] = run(query[T].filter(filter))
     inline def findBy[T, I](id: I, extractId: T => I): Seq[T] = run(query[T].filter(m => extractId(m) == lift(id)))
+    inline def findBy[T, I](entities: Seq[I], extractId: T => I): Seq[T] =
+      run(query[T].filter(m => liftQuery(entities).contains(extractId(m))))
+
     inline def findAll[T]: Seq[T] = run(query[T])
 
     // Find max by id and max:

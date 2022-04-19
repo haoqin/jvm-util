@@ -7,7 +7,9 @@ import java.time.LocalDateTime
 
 // object TypeUtilSpec:
 sealed trait SimpleTrait
+
 case object A extends SimpleTrait
+
 case class B() extends SimpleTrait
 
 enum SimpleEnum:
@@ -19,7 +21,7 @@ class TypeUtilSpec extends AsyncFlatSpec {
   private val orcaUserUid = "1d5h2AbE01W"
   private lazy val updatedAt = LocalDateTime.now()
   private val orcaUser: OrcaUser = OrcaUser(orcaUserId, orcaUserUid, "Mike Darell", "profile.png", "Mike", "Darell", LocalDateTime.parse("2001-05-11T01:21:24.99"), "ab@cde.de", "+12148366351", "US", None, None, None, None, None, None, updatedAt)
-  
+
   "TypeUtil canBeAssignedTo" should "determione if a type belongs to the set of all implementatoins of the same sealed trait" in {
     import TypeUtil.*
     import SimpleEnum.*
@@ -40,6 +42,15 @@ class TypeUtilSpec extends AsyncFlatSpec {
 
   "TypeUtil extractField" should "extract a field with the given name and type from a case class instance" in {
     import TypeUtil.*
+    println("???")
+    //    println(orcaUser.extractField2[String]("id"))
+    println("???")
+
+    import scala.compiletime.*
+
+    import TypeUtil.<=
+
+    println(s"=== ${constValue[20 <= 3]}")
     assert(orcaUserId == orcaUser.extractField["id", String] && updatedAt == orcaUser.extractField["updatedAt", LocalDateTime])
   }
 }
